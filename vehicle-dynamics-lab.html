@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>차량 서스펜션 물리 실험실</title>
+  <style>
+    :root{--ink:#152a3a;--muted:#67808f;--panel:#fff;--line:#dce6ea;--navy:#12344d;--blue:#1677aa;--cyan:#13a8a8;--yellow:#f6c755;--orange:#f18c45;--shadow:0 16px 40px rgba(18,52,77,.1)}*{box-sizing:border-box}html,body{margin:0;height:100%;background:#e8eff1;color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo",sans-serif}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid rgba(19,168,168,.3);outline-offset:2px}
+    .launch{min-height:100%;display:grid;place-items:center;overflow:hidden;position:relative;background:linear-gradient(135deg,#092233,#153e52 56%,#0c2738);color:#f5ffff}.launch:before{content:"";position:absolute;width:68vmax;height:68vmax;border:1px solid rgba(116,224,215,.2);border-radius:50%;right:-28vmax;top:-33vmax;box-shadow:0 0 0 70px rgba(116,224,215,.03),0 0 0 140px rgba(116,224,215,.02)}.launch:after{content:"";position:absolute;inset:0;opacity:.28;background-image:linear-gradient(90deg,transparent 49.8%,rgba(171,237,232,.25) 50%,transparent 50.2%),linear-gradient(transparent 49.8%,rgba(171,237,232,.16) 50%,transparent 50.2%);background-size:72px 72px;mask-image:linear-gradient(to bottom,black,transparent)}.launch-card{z-index:1;width:min(760px,88vw);text-align:center}.launch .tag{font-size:12px;font-weight:800;letter-spacing:.19em;color:#83ebda}.launch h1{font-size:clamp(42px,7vw,82px);line-height:.98;letter-spacing:-.065em;margin:18px 0}.launch h1 span{color:#8af0df}.launch p{margin:0 auto;color:#b8d0da;font-size:17px;line-height:1.7}.launch .meta{display:flex;justify-content:center;gap:22px;margin:27px 0 30px;color:#95b4c2;font-size:11px;letter-spacing:.08em}.start{background:#8aefd9;color:#103a42;border:0;padding:15px 30px;font-weight:800;font-size:15px;border-radius:6px;box-shadow:0 10px 28px rgba(54,227,199,.25);transition:.2s}.start:hover{transform:translateY(-2px);background:#b3ffea}.launch-car{position:absolute;bottom:-5vh;left:50%;translate:-50% 0;width:min(980px,115vw);opacity:.22;filter:drop-shadow(0 -30px 24px rgba(0,0,0,.3))}
+    .app{display:none;min-height:100%;padding:18px;grid-template-rows:auto 1fr;gap:14px}.app.ready{display:grid}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:0 5px}.brand{display:flex;align-items:center;gap:11px}.brand-mark{width:30px;height:30px;display:grid;place-items:center;background:var(--navy);color:#99f5e4;border-radius:7px;font-weight:900}.brand h1{font-size:15px;letter-spacing:-.035em;margin:0}.brand p{font-size:10px;color:var(--muted);margin:2px 0 0}.engine{display:flex;align-items:center;gap:7px;color:#397180;font-size:11px;font-weight:700}.engine i{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 4px rgba(19,168,168,.12)}
+    .workspace{display:grid;grid-template-columns:210px minmax(480px,1fr) 310px;gap:14px;min-height:0}.sidebar,.inspector,.stage,.graph-card{background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:12px}.sidebar{padding:13px;display:flex;flex-direction:column;gap:5px}.section-label{font-size:10px;font-weight:800;color:#8196a1;letter-spacing:.12em;margin:6px 8px 8px}.nav-button{border:0;background:transparent;border-radius:8px;color:#446071;font-size:12px;text-align:left;padding:11px 10px;display:flex;align-items:center;gap:10px;transition:.15s}.nav-button b{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;background:#edf3f4;color:#60808d;font-size:10px}.nav-button:hover{background:#f1f7f7}.nav-button.active{background:#e6f6f3;color:#125c61;font-weight:800}.nav-button.active b{background:var(--cyan);color:#fff}.model-card{margin-top:auto;border-radius:9px;background:#14394f;color:#e6f4f7;padding:14px}.model-card .small{color:#93bac5;font-size:10px;letter-spacing:.08em}.model-card b{display:block;margin:7px 0 5px;font-size:12px}.model-card p{font-size:10px;line-height:1.6;color:#b6d1d8;margin:0}.model-card .line{height:3px;background:linear-gradient(90deg,#8aefd9 0 63%,rgba(255,255,255,.2) 63%);margin-top:12px;border-radius:3px}
+    .main-column{min-width:0;display:grid;grid-template-rows:minmax(390px,1fr) auto;gap:14px}.stage{min-height:420px;position:relative;overflow:hidden;background:linear-gradient(170deg,#f8fbfc 0 68%,#e5ecec 68%)}.stage-header{position:absolute;z-index:3;left:20px;top:18px;right:18px;display:flex;justify-content:space-between;align-items:start;pointer-events:none}.eyebrow{font-size:10px;font-weight:800;letter-spacing:.15em;color:var(--cyan)}.stage-header h2{margin:4px 0 0;font-size:20px;letter-spacing:-.055em}.stage-header p{margin:5px 0 0;color:var(--muted);font-size:11px}.state-pill{background:#e2f4f1;color:#136d70;border-radius:999px;padding:7px 10px;font-size:10px;font-weight:800;letter-spacing:.07em}.scene-note{position:absolute;z-index:3;right:18px;bottom:15px;background:rgba(255,255,255,.86);border:1px solid var(--line);border-radius:7px;padding:8px 10px;color:#587382;font-size:10px;line-height:1.55;max-width:207px}.scene-note b{color:var(--navy)}
+    #vehicle-art{display:block;width:100%;height:100%;min-height:420px}.part{cursor:pointer;transition:filter .18s;outline:none}.part:hover,.part.selected{filter:drop-shadow(0 0 8px rgba(19,168,168,.65))}.part.selected .highlight-fill{fill:#73dfcd!important}.part.selected .highlight-stroke{stroke:#0a938c!important;stroke-width:8!important}.part-label{font-size:13px;font-weight:800;fill:#3e6474;pointer-events:none}.callout{fill:#fff;stroke:#d6e5e8;stroke-width:2}.callout-line{stroke:#8eb0b8;stroke-width:2;stroke-dasharray:4 5}.wheel-rim{fill:#dce8eb;stroke:#5b7480;stroke-width:10}.tire{fill:#233d4b;stroke:#162c39;stroke-width:6}.spoke{stroke:#577080;stroke-width:8;stroke-linecap:round}.road{fill:#4a5962}.road-line{stroke:#dfe9e9;stroke-width:6;stroke-dasharray:50 35}.bump{fill:#f4c654;stroke:#d89e26;stroke-width:4}.spring{fill:none;stroke:#19a6a3;stroke-width:10;stroke-linecap:round;stroke-linejoin:round}.damper-body{fill:#2a5870;stroke:#153b51;stroke-width:4}.damper-rod{stroke:#a8c9d1;stroke-width:9}.body-metal{fill:url(#carpaint);stroke:#164967;stroke-width:5}.glass{fill:url(#glass);stroke:#204f68;stroke-width:4}.panel-line{fill:none;stroke:#27617b;stroke-width:3}.lamp{fill:#fff8bd;stroke:#d9b74c;stroke-width:4}.tail{fill:#e45a5c;stroke:#aa353d;stroke-width:3}.brake{fill:#f6bc55;stroke:#9a6231;stroke-width:5}.strut-top{fill:#1f4357;stroke:#123448;stroke-width:4}.body-depth{fill:#0e4967;stroke:#123d56;stroke-width:4}.top-surface{fill:#78d4db;stroke:#276d87;stroke-width:4}.wheel-gloss{fill:none;stroke:rgba(255,255,255,.28);stroke-width:6}.stage.testing .callouts{opacity:.12}.stage.testing .scene-note{max-width:250px}.stage.testing .scene-note:after{content:' 차량은 실제 속도 조건에 맞춰 방지턱을 통과하며, 차체·휠 운동은 같은 물리 계산을 사용합니다.'}
+    .graph-card{padding:14px 16px 11px;min-height:180px;display:none}.graph-card.show{display:block}.graph-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px}.graph-head h3{font-size:13px;margin:0}.graph-head p{font-size:10px;color:var(--muted);margin:3px 0 0}.tabs{display:flex;background:#edf3f4;border-radius:7px;padding:3px}.tabs button{border:0;border-radius:5px;background:transparent;font-size:10px;color:#6c8490;padding:6px 8px}.tabs button.active{background:#fff;color:#176c72;font-weight:800;box-shadow:0 1px 3px rgba(0,0,0,.08)}#graph{width:100%;height:122px;display:block}.legend{display:flex;gap:13px;color:#607986;font-size:10px}.legend span:before{content:"";display:inline-block;width:14px;height:2px;background:var(--cyan);vertical-align:middle;margin-right:5px}.legend .b:before{background:var(--orange)}
+    .inspector{padding:17px;display:flex;flex-direction:column;min-height:0;overflow:auto}.inspector .heading{display:flex;justify-content:space-between;align-items:start;padding-bottom:13px;border-bottom:1px solid var(--line)}.inspector h2{margin:0;font-size:16px;letter-spacing:-.04em}.inspector .code{color:var(--cyan);font-size:10px;font-weight:800;letter-spacing:.13em}.concept-icon{width:30px;height:30px;background:#e7f6f3;color:#168781;border-radius:8px;display:grid;place-items:center;font-weight:800}.concept-text{font-size:12px;line-height:1.75;color:#4e6978;margin:15px 0}.formula-box{background:#f1f8f7;border:1px solid #d6eeea;border-radius:8px;padding:12px 13px}.formula{font:700 20px ui-monospace,SFMono-Regular,Menlo,monospace;color:#12636b;letter-spacing:-.08em}.formula-box p{margin:7px 0 0;font-size:10px;line-height:1.65;color:#5c7d81}.insight{margin-top:13px;padding:11px 12px;border-left:3px solid var(--yellow);background:#fffaf0;font-size:11px;line-height:1.65;color:#6c5a34}.part-buttons{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:14px}.part-buttons button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:8px 6px;font-size:10px;text-align:left;color:#4f6a78}.part-buttons button:hover,.part-buttons button.active{border-color:#62c7bd;background:#eaf8f6;color:#126c6e;font-weight:800}
+    .parameter-title{font-size:12px;font-weight:800;margin:15px 0 8px}.control{margin:0 0 15px}.control label{display:flex;justify-content:space-between;color:#54717f;font-size:11px;margin-bottom:7px}.control output{color:#117c80;font:700 11px ui-monospace,SFMono-Regular,Menlo,monospace}input[type=range]{width:100%;accent-color:var(--cyan)}.run{border:0;width:100%;padding:12px;background:var(--navy);color:#fff;border-radius:7px;font-size:12px;font-weight:800;transition:.18s}.run:hover{background:#1c5e7f;transform:translateY(-1px)}.compare-note{margin-top:10px;font-size:10px;line-height:1.65;color:#607986;padding:10px;background:#f5f8f9;border-radius:7px}.compare-note b{color:#156d70}.live-data{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px}.metric{border:1px solid var(--line);border-radius:7px;padding:8px}.metric span{display:block;font-size:9px;color:#718894}.metric b{display:block;color:#183e52;font:700 12px ui-monospace,SFMono-Regular,Menlo,monospace;margin-top:4px}
+    .lesson{display:none}.lesson.show{display:block}.lesson-index{font-size:10px;font-weight:800;letter-spacing:.14em;color:var(--cyan);margin:17px 0 7px}.lesson h3{font-size:19px;letter-spacing:-.05em;margin:0 0 8px}.lesson p{font-size:12px;line-height:1.8;color:#4d6877;margin:0}.lesson-dots{display:flex;gap:5px;margin:16px 0}.lesson-dots i{height:3px;flex:1;border-radius:3px;background:#dfe9eb}.lesson-dots i.on{background:var(--cyan)}.lesson-actions{display:flex;gap:7px}.lesson-actions button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:9px 10px;font-size:11px;color:#55707d}.lesson-actions button:last-child{background:var(--navy);border-color:var(--navy);color:#fff;margin-left:auto}.quiz{margin-top:14px;padding:11px;background:#f5faf9;border:1px solid #dcefeb;border-radius:8px}.quiz b{font-size:11px}.quiz button{display:block;width:100%;margin-top:6px;text-align:left;border:1px solid #d8e4e7;background:#fff;border-radius:5px;padding:8px;font-size:10px;color:#4f6a78}.quiz button:hover{border-color:var(--cyan);color:#126d70}.feedback{font-size:10px;line-height:1.65;color:#28656a;margin-top:8px;min-height:34px}
+    .results{display:none}.results.show{display:block}.result-intro{font-size:12px;line-height:1.75;color:#506c7a;margin:15px 0}.result-table{width:100%;border-collapse:collapse;font-size:10px}.result-table th{text-align:left;color:#8197a1;font-weight:700;padding:7px 4px;border-bottom:1px solid var(--line)}.result-table td{padding:8px 4px;border-bottom:1px solid #edf2f3;color:#425f70}.result-table td:nth-child(n+2){font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.result-table .a{color:#087c7a}.result-table .b{color:#bd6428}.result-message{margin-top:12px;padding:10px;background:#fff7ec;border-left:3px solid var(--orange);font-size:10px;line-height:1.7;color:#765535}.toast{position:fixed;z-index:10;left:50%;bottom:22px;translate:-50% 12px;background:#123e53;color:#ecffff;padding:10px 14px;border-radius:7px;font-size:11px;box-shadow:0 10px 25px rgba(7,38,53,.25);opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;translate:-50% 0}
+    @media(max-width:1100px){.workspace{grid-template-columns:180px minmax(360px,1fr) 280px}.sidebar{padding:10px}.scene-note{display:none}}@media(max-width:820px){body{overflow:auto}.app{padding:10px}.workspace{grid-template-columns:1fr;min-height:auto}.sidebar{flex-direction:row;overflow:auto}.sidebar .section-label,.model-card{display:none}.nav-button{white-space:nowrap}.main-column{grid-row:2}.inspector{grid-row:3}.stage{min-height:390px}.top{padding:0}.engine{display:none}}@media(max-width:520px){.stage-header{left:14px;top:14px}.stage-header h2{font-size:17px}.stage-header p{max-width:240px}.state-pill{display:none}.graph-head{align-items:start;flex-direction:column}.tabs{width:100%}.tabs button{flex:1}.launch .meta{gap:10px;font-size:9px}.workspace{gap:10px}.stage{min-height:340px}.main-column{grid-template-rows:390px auto}.inspector{padding:14px}.part-buttons{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+  <section id="launch" class="launch" aria-labelledby="launch-title">
+    <svg class="launch-car" viewBox="0 0 1200 420" aria-hidden="true"><defs><linearGradient id="hero-paint" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#d9fffc"/><stop offset=".28" stop-color="#35d6c7"/><stop offset=".7" stop-color="#147fa8"/><stop offset="1" stop-color="#0a365a"/></linearGradient><linearGradient id="hero-glass" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#e8ffff"/><stop offset=".5" stop-color="#63b6ca"/><stop offset="1" stop-color="#17456b"/></linearGradient><filter id="hero-shadow"><feGaussianBlur stdDeviation="12"/></filter></defs><ellipse cx="600" cy="359" rx="480" ry="32" fill="#020e1d" opacity=".65" filter="url(#hero-shadow)"/><g class="hero-vehicle"><path fill="url(#hero-paint)" stroke="#84fbec" stroke-width="4" d="M105 304 143 250 290 232 424 126 698 111 862 204 996 224 1080 274 1064 331 966 338 930 303 789 303 752 342 390 342 354 303 225 303 192 336 102 329Z"/><path fill="url(#hero-glass)" stroke="#9cfff3" stroke-width="3" d="m330 226 122-88 221-11 144 83-487 8Z"/><path fill="none" stroke="#083c61" stroke-width="4" d="m528 135-12 82m131-87 35 84M299 241h572M607 224v105M776 217v101"/><path fill="#fff5a8" d="m998 240 54 31-71-3Z"/><path fill="#f6646e" d="m139 254 55-9-24 30-53 10Z"/><path fill="#064766" opacity=".8" d="m266 232 143-5-34 19-128 13Zm564-15 90 10 64 39-118-19Z"/><g class="hero-wheel"><circle fill="#061927" stroke="#4ec5d4" stroke-width="5" cx="294" cy="322" r="73"/><circle fill="#c5e7ed" stroke="#174962" stroke-width="9" cx="294" cy="322" r="44"/><circle fill="#f4c450" cx="294" cy="322" r="23"/><path fill="none" stroke="#426a80" stroke-width="8" stroke-linecap="round" d="M294 283v78m-39-39h78m-67-28 56 56m0-56-56 56"/></g><g class="hero-wheel"><circle fill="#061927" stroke="#4ec5d4" stroke-width="5" cx="845" cy="322" r="73"/><circle fill="#c5e7ed" stroke="#174962" stroke-width="9" cx="845" cy="322" r="44"/><circle fill="#f4c450" cx="845" cy="322" r="23"/><path fill="none" stroke="#426a80" stroke-width="8" stroke-linecap="round" d="M845 283v78m-39-39h78m-67-28 56 56m0-56-56 56"/></g><path fill="none" stroke="#d5fffb" stroke-width="3" opacity=".75" d="M174 254 304 242 440 137 684 126"/></g></svg>
+    <div class="launch-card"><div class="tag">INTERACTIVE PHYSICS LAB</div><h1 id="launch-title">차량 서스펜션<br><span>물리 실험실</span></h1><p>자동차를 조작하는 게임이 아니라, 방지턱 충격이<br>스프링·댐퍼·차체에 전달되는 과정을 직접 읽는 실험 도구입니다.</p><div class="meta"><span>2-DOF QUARTER-CAR</span><span>RK4 NUMERICAL SOLVER</span><span>REAL-TIME GRAPH</span></div><button id="enter" class="start">실험실 열기</button></div>
+  </section>
+  <main id="app" class="app" aria-label="차량 서스펜션 물리 실험실">
+    <header class="top"><div class="brand"><div class="brand-mark">VD</div><div><h1>Vehicle Dynamics Lab</h1><p>차량 서스펜션 가상 물리 실험실</p></div></div><div class="engine"><i></i>물리 모델 준비됨</div></header>
+    <div class="workspace">
+      <nav class="sidebar" aria-label="실험 단계"><div class="section-label">실험 흐름</div><button class="nav-button active" data-view="structure"><b>01</b>구조 관찰</button><button class="nav-button" data-view="experiment"><b>02</b>방지턱 실험</button><button class="nav-button" data-view="results"><b>03</b>결과 비교</button><button class="nav-button" data-view="learn"><b>04</b>개념 학습</button><div class="model-card"><div class="small">MODEL IN USE</div><b>2-DOF Quarter-Car</b><p>차체와 휠을 각각의 질량으로 두고, 스프링·댐퍼·타이어 힘을 동시에 계산합니다.</p><div class="line"></div></div></nav>
+      <section class="main-column">
+        <section class="stage" aria-labelledby="stage-title"><div class="stage-header"><div><div class="eyebrow" id="stage-kicker">STRUCTURE VIEW</div><h2 id="stage-title">차체와 바퀴 사이의 힘의 길</h2><p id="stage-caption">표시된 부품을 눌러 역할과 식을 확인하세요.</p></div><div id="state-pill" class="state-pill">관찰 모드</div></div>
+          <svg id="vehicle-art" viewBox="0 0 1200 620" role="img" aria-label="스프링과 댐퍼가 보이는 차량 측면 단면"><defs><linearGradient id="sky" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#f7fbfc"/><stop offset="1" stop-color="#e7f0f1"/></linearGradient><linearGradient id="carpaint" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#4fbed0"/><stop offset=".42" stop-color="#2084aa"/><stop offset="1" stop-color="#155c83"/></linearGradient><linearGradient id="glass" x1="0" x2=".8" y1="0" y2="1"><stop stop-color="#d2f3f4"/><stop offset=".55" stop-color="#5ca2b7"/><stop offset="1" stop-color="#28647f"/></linearGradient><filter id="ground-shadow"><feGaussianBlur stdDeviation="11"/></filter></defs>
+            <rect width="1200" height="620" fill="url(#sky)"/><g opacity=".55"><path d="M0 284H1200M0 218H1200M0 152H1200" stroke="#d5e5e7" stroke-width="2"/><path d="M120 0V380M300 0V380M480 0V380M660 0V380M840 0V380M1020 0V380" stroke="#d5e5e7" stroke-width="2"/></g>
+            <g id="road-art" class="part" data-part="road"><rect class="road highlight-fill" x="0" y="504" width="1200" height="116"/><path class="road-line" d="M0 561H1200"/><path d="M726 504c20-61 105-61 125 0Z" class="bump highlight-fill"/><path d="M739 504c17-38 77-38 96 0" fill="none" stroke="#ffed9c" stroke-width="4"/></g><ellipse cx="620" cy="505" rx="410" ry="24" fill="#253f4c" opacity=".16" filter="url(#ground-shadow)"/>
+            <g id="body-shift"><g id="body-part" class="part" data-part="body"><path class="body-metal highlight-fill" d="M153 443 176 377 269 351 359 340 458 224 653 211 776 232 887 333 1000 352 1049 395 1040 457 957 464 932 427 812 427 782 465 391 465 361 427 237 427 208 461 151 457Z"/><path class="glass" d="M390 337 475 243 633 232 736 251 832 339Z"/><path d="M536 238 526 339M665 242 693 339" class="panel-line"/><path d="M365 355H915M713 356v94M479 350v104" class="panel-line"/><path d="M842 341h114l46 35h-145Z" class="body-metal"/><path d="M180 382h105l-37 29h-81Z" class="body-metal"/><path class="lamp" d="M943 361h40l16 19h-61Z"/><path class="tail" d="M190 380h43l-9 24h-49Z"/><rect x="616" y="375" width="50" height="7" rx="3.5" fill="#d8edf0"/><rect x="748" y="375" width="50" height="7" rx="3.5"/><path d="M310 374h31" class="panel-line"/></g><g id="spring-group" class="part" data-part="spring"><circle class="strut-top" cx="853" cy="335" r="20"/><polyline id="spring-path" class="spring highlight-stroke" points="853,348 831,360 874,372 831,384 874,396 831,408 874,420 853,432"/><text x="884" y="389" class="part-label">스프링</text></g><g id="damper-group" class="part" data-part="damper"><rect class="damper-body highlight-fill" x="883" y="365" width="25" height="66" rx="11"/><line id="damper-rod" class="damper-rod highlight-stroke" x1="895" y1="335" x2="895" y2="372"/><text x="915" y="427" class="part-label">댐퍼</text></g></g>
+            <g id="rear-assembly" class="part" data-part="wheel"><circle class="tire" cx="297" cy="439" r="76"/><circle class="wheel-rim highlight-fill" cx="297" cy="439" r="47"/><circle class="brake" cx="297" cy="439" r="29"/><path class="spoke" d="M297 397v84M255 439h84M267 409l60 60M327 409l-60 60"/></g><g id="front-assembly"><g id="tire-part" class="part" data-part="tire"><circle class="tire highlight-fill" cx="850" cy="439" r="77"/></g><g id="wheel-part" class="part" data-part="wheel"><circle class="wheel-rim highlight-fill" cx="850" cy="439" r="48"/><circle class="brake" cx="850" cy="439" r="30"/><g id="front-spokes"><path class="spoke" d="M850 397v84M808 439h84M820 409l60 60M880 409l-60 60"/></g></g></g>
+            <g><path class="callout-line" d="M311 328 231 274 113 274"/><rect class="callout" x="38" y="247" width="160" height="53" rx="8"/><text x="54" y="270" class="part-label">차체 (스프렁 매스)</text><text x="54" y="288" fill="#75909b" font-size="11">승차감으로 느끼는 질량</text><path class="callout-line" d="M853 464 1017 316 1115 316"/><rect class="callout" x="1017" y="289" width="150" height="54" rx="8"/><text x="1032" y="312" class="part-label">휠 · 타이어</text><text x="1032" y="330" fill="#75909b" font-size="11">노면과 첫 접촉</text></g>
+          </svg><div class="scene-note"><b>관찰 팁</b><br>스프링, 댐퍼, 타이어, 차체 또는 방지턱을 클릭해 보세요.</div>
+        </section>
+        <section id="graph-card" class="graph-card" aria-labelledby="graph-title"><div class="graph-head"><div><h3 id="graph-title">차체 변위–시간 그래프</h3><p id="graph-subtitle">가로축 시간 (s) · 세로축 차체 변위 (m)</p></div><div class="tabs" aria-label="그래프 변수"><button class="active" data-graph="body">차체 변위</button><button data-graph="velocity">차체 속도</button><button data-graph="spring">스프링 변형</button></div></div><canvas id="graph" aria-label="실험 결과 그래프"></canvas><div class="legend"><span>실험 A</span><span id="b-legend" class="b" hidden>실험 B</span></div></section>
+      </section>
+      <aside class="inspector" aria-live="polite">
+        <div id="concept-panel"><div class="heading"><div><div id="part-code" class="code">SYSTEM OVERVIEW</div><h2 id="part-name">서스펜션의 역할</h2></div><div class="concept-icon">↕</div></div><p id="part-text" class="concept-text">서스펜션은 차체와 바퀴 사이에서 충격과 진동을 조절합니다. 아래 부품을 선택하면 힘이 어디서 생기고, 왜 필요한지 단계적으로 볼 수 있습니다.</p><div class="formula-box"><div id="formula" class="formula">m z̈ = ΣF</div><p id="formula-desc">뉴턴의 운동 법칙: 각 질량에 작용하는 힘의 합이 가속도를 만듭니다.</p></div><div id="insight" class="insight">중요: 방지턱의 충격은 바퀴 → 스프링·댐퍼 → 차체 순으로 전달됩니다.</div><div class="part-buttons" id="part-buttons"><button data-part="body">차체</button><button data-part="spring">스프링</button><button data-part="damper">댐퍼</button><button data-part="tire">타이어</button><button data-part="wheel">휠</button><button data-part="road">방지턱·노면</button></div></div>
+        <div id="experiment-panel" hidden><div class="heading"><div><div class="code">EXPERIMENT SETUP</div><h2>같은 방지턱, 다른 조건</h2></div><div class="concept-icon">ƒ</div></div><p class="concept-text">변수를 바꾸고 실행하면, 바로 앞 차체·휠 움직임과 아래 그래프가 같은 계산 결과를 공유합니다.</p><div class="control"><label>차량 속도 <output id="speed-label">30 km/h</output></label><input id="speed" type="range" min="10" max="50" value="30"></div><div class="control"><label>스프링 강성 <output id="k-label">22 kN/m</output></label><input id="stiffness" type="range" min="12" max="38" value="22"></div><div class="control"><label>감쇠 계수 <output id="c-label">2,600 N·s/m</output></label><input id="damping" type="range" min="600" max="5200" step="100" value="2600"></div><button id="run" class="run">현재 조건으로 실험 실행</button><div class="compare-note"><b>비교 방법</b><br>첫 실행이 실험 A입니다. 값을 바꿔 다시 실행하면 실험 B가 주황색 곡선으로 겹쳐집니다.</div><div class="live-data"><div class="metric"><span>차체 변위</span><b id="z-s">0.000 m</b></div><div class="metric"><span>차체 속도</span><b id="v-s">0.000 m/s</b></div><div class="metric"><span>스프링 변형</span><b id="def">0.000 m</b></div><div class="metric"><span>차체 가속도</span><b id="acc">0.000 m/s²</b></div></div></div>
+        <div id="results-panel" class="results"><div class="heading"><div><div class="code">COMPARE & INTERPRET</div><h2>조건별 차체 반응</h2></div><div class="concept-icon">↗</div></div><p id="results-intro" class="result-intro">먼저 방지턱 실험에서 A를 실행해 주세요. 결과는 곡선과 수치로 함께 해석됩니다.</p><table class="result-table"><thead><tr><th>지표</th><th class="a">실험 A</th><th class="b">실험 B</th></tr></thead><tbody><tr><td>최대 차체 변위</td><td id="a-z">–</td><td id="b-z">–</td></tr><tr><td>최대 가속도</td><td id="a-a">–</td><td id="b-a">–</td></tr><tr><td>안정화 시간</td><td id="a-t">–</td><td id="b-t">–</td></tr></tbody></table><div id="result-message" class="result-message">A와 B를 모두 만들면, 이곳에서 ‘왜’ 달라졌는지 설명합니다.</div></div>
+        <div id="lesson-panel" class="lesson"><div class="heading"><div><div id="lesson-no" class="code">01 / 05</div><h2 id="lesson-title">서스펜션이란?</h2></div><div class="concept-icon">◎</div></div><p id="lesson-text"></p><div id="lesson-dots" class="lesson-dots"></div><div id="quiz" class="quiz" hidden><b>Q. 스프링 강성을 높이면?</b><button data-answer="no">댐퍼가 없어도 진동이 완전히 사라진다.</button><button data-answer="yes">차체–휠 계의 고유진동수가 높아진다.</button><button data-answer="no">방지턱의 높이가 자동으로 낮아진다.</button><div id="feedback" class="feedback">정답을 선택한 다음, 실제 변수 패널에서 확인해 보세요.</div></div><div class="lesson-actions"><button id="prev-lesson">이전</button><button id="next-lesson">다음</button></div></div>
+      </aside>
+    </div>
+  </main><div id="toast" class="toast" role="status"></div>
+  <script>
+  (()=>{'use strict';const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];const app=$('#app'),launch=$('#launch'),graphCard=$('#graph-card'),graph=$('#graph'),gctx=graph.getContext('2d');const state={view:'structure',graph:'body',current:null,A:null,B:null,running:false,t:0,last:0,lesson:0};const p={ms:350,mu:45,kt:190000,ct:260,speed:30,k:22000,c:2600};
+    const info={body:{code:'SPRUNG MASS',name:'차체 (스프렁 매스)',text:'차체는 탑승자가 느끼는 운동을 대표하는 질량입니다. 그래프의 차체 변위·속도·가속도는 바로 이 차체의 운동을 계산한 값입니다.',formula:'mₛ z̈ₛ = ΣF',desc:'mₛ는 차체 질량, zₛ는 차체의 위아래 변위입니다.',insight:'차체가 작게, 빠르게 안정될수록 승차감과 차량 자세 유지에 유리합니다.'},spring:{code:'SPRING',name:'스프링',text:'스프링은 노면 충격을 탄성 변형으로 저장했다가 원래 길이로 돌아가려는 힘을 만듭니다. 충격을 없애지는 않지만, 차체로 전달되는 운동의 성격을 바꿉니다.',formula:'F = −k x',desc:'k는 스프링 강성, x는 스프링의 압축·인장 변위입니다.',insight:'k가 클수록 같은 힘에서 덜 눌리지만, 차체–휠 계의 고유진동수는 높아집니다.'},damper:{code:'DAMPER',name:'댐퍼 (쇼크 업소버)',text:'댐퍼는 스프링과 차체의 상대 운동 에너지를 열로 소산합니다. 그래서 방지턱을 지난 뒤 차체가 계속 출렁이지 않고 빠르게 안정됩니다.',formula:'F = −c v',desc:'c는 감쇠 계수, v는 스프링 양 끝의 상대 속도입니다.',insight:'감쇠가 너무 작으면 여러 번 튀고, 너무 크면 충격이 차체에 더 직접적으로 전달될 수 있습니다.'},tire:{code:'TIRE STIFFNESS',name:'타이어',text:'타이어는 노면을 처음 만나는 탄성 요소입니다. 이 모델에서는 타이어 강성이 휠과 방지턱의 노면 변위 입력을 연결합니다.',formula:'Fₜ = −kₜ(zᵤ − zᵣ)',desc:'kₜ는 타이어 강성, zᵤ는 휠 변위, zᵣ는 노면 변위입니다.',insight:'바퀴는 차체보다 가벼운 비현가 질량이라 노면 변화에 먼저, 더 크게 반응합니다.'},wheel:{code:'UNSPRUNG MASS',name:'휠 · 브레이크 디스크',text:'휠·타이어·일부 서스펜션 부품은 비현가 질량으로 취급합니다. 비현가 질량이 작을수록 바퀴가 노면을 더 잘 따라갈 수 있습니다.',formula:'mᵤ z̈ᵤ = ΣF',desc:'mᵤ는 휠 쪽 질량, zᵤ는 휠의 위아래 변위입니다.',insight:'바퀴의 큰 반응이 스프링과 댐퍼를 거쳐 차체에는 완화되어 전달됩니다.'},road:{code:'ROAD INPUT',name:'방지턱과 노면',text:'방지턱은 시간에 따라 변하는 노면 변위 zᵣ로 모델에 들어갑니다. 같은 높이도 빠른 속도로 지나면 더 짧은 시간에 입력되어 충격이 커집니다.',formula:'zᵣ(t) = h·sin²(πt/T)',desc:'h는 방지턱 높이, T는 차량이 방지턱을 지나는 시간입니다.',insight:'속도가 높아질수록 T가 짧아져 입력의 변화율이 커집니다.'}};
+    const lessons=[['서스펜션이란?','서스펜션은 자동차와 노면 사이에서 충격과 진동을 조절하는 장치입니다. 바퀴가 받은 움직임이 차체에 그대로 전달되지 않도록 운동의 경로를 만듭니다.','body'],['스프링','스프링은 변형되면서 에너지를 저장하고, 원래 길이로 돌아가려는 탄성력을 만듭니다. 강성을 높이면 단단해지지만, 항상 더 편안해지는 것은 아닙니다.','spring'],['댐퍼','댐퍼는 스프링이 반복하는 진동을 줄이는 장치입니다. 상대 속도가 빠를수록 더 큰 감쇠력이 생겨 차체의 움직임을 안정시킵니다.','damper'],['방지턱을 통과하면?','방지턱은 먼저 타이어와 휠을 위로 밀어 올립니다. 그 뒤 스프링·댐퍼가 힘을 전달하고, 마지막으로 차체가 움직입니다.','road'],['왜 균형이 중요한가?','승차감은 단순히 “부드러운 스프링” 하나로 정해지지 않습니다. 속도, 강성, 감쇠가 함께 차체 반응과 안정성을 결정합니다.','damper']];
+    function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2600)}function selectPart(key){const d=info[key];if(!d)return;$$('.part').forEach(x=>x.classList.toggle('selected',x.dataset.part===key));$$('#part-buttons button').forEach(x=>x.classList.toggle('active',x.dataset.part===key));$('#part-code').textContent=d.code;$('#part-name').textContent=d.name;$('#part-text').textContent=d.text;$('#formula').textContent=d.formula;$('#formula-desc').textContent=d.desc;$('#insight').textContent=d.insight}
+    function setView(v){state.view=v;$$('.nav-button').forEach(b=>b.classList.toggle('active',b.dataset.view===v));$('#concept-panel').hidden=v!=='structure';$('#experiment-panel').hidden=v!=='experiment';$('#results-panel').classList.toggle('show',v==='results');$('#lesson-panel').classList.toggle('show',v==='learn');graphCard.classList.toggle('show',v==='experiment'||v==='results');const T={structure:['STRUCTURE VIEW','차체와 바퀴 사이의 힘의 길','표시된 부품을 눌러 역할과 식을 확인하세요.','관찰 모드'],experiment:['BUMP TEST','방지턱 입력에 대한 차체 반응','한 번의 계산 결과가 차량 움직임·실시간 수치·그래프에 동시에 반영됩니다.','실험 준비'],results:['COMPARE RESULTS','두 조건이 만든 차이','그래프의 진폭과 안정화 시간을 읽고, 어떤 변수가 원인인지 연결해 보세요.','분석 모드'],learn:['LEARNING PATH','수식보다 먼저, 힘의 흐름을 이해하기','각 단계에서 관련 부품이 강조됩니다.','학습 모드']}[v];$('#stage-kicker').textContent=T[0];$('#stage-title').textContent=T[1];$('#stage-caption').textContent=T[2];$('#state-pill').textContent=T[3];if(v==='learn')renderLesson();if(v==='results')updateResults();if(v==='experiment'||v==='results')drawGraph()}
+    function input(t,s){const start=.65,d=.72/(s/3.6),h=.075;if(t<start||t>start+d)return {z:0,v:0};const u=(t-start)/d;return {z:h*Math.sin(Math.PI*u)**2,v:h*Math.sin(2*Math.PI*u)*Math.PI/d}}function deriv(y,t,q){const r=input(t,q.speed),fs=q.k*(y[0]-y[2])+q.c*(y[1]-y[3]),ft=q.kt*(y[2]-r.z)+q.ct*(y[3]-r.v);return [y[1],-fs/q.ms,y[3],(fs-ft)/q.mu]}function step(y,t,h,q){const a=deriv(y,t,q),b=deriv(y.map((v,i)=>v+a[i]*h*.5),t+h*.5,q),c=deriv(y.map((v,i)=>v+b[i]*h*.5),t+h*.5,q),d=deriv(y.map((v,i)=>v+c[i]*h),t+h,q);return y.map((v,i)=>v+h*(a[i]+2*b[i]+2*c[i]+d[i])/6)}function solve(q){let y=[0,0,0,0],data=[],h=.004;for(let t=0;t<=6.2;t+=h){const a=deriv(y,t,q),r=input(t,q.speed);data.push({t,zs:y[0],vs:y[1],zu:y[2],vu:y[3],acc:a[1],spring:y[0]-y[2],road:r.z});y=step(y,t,h,q)}return {q:{...q},data}}function sample(r,t){const d=r.data;if(t<=0)return d[0];if(t>=d.at(-1).t)return d.at(-1);const i=Math.min(d.length-2,Math.floor(t/.004)),a=d[i],b=d[i+1],u=(t-a.t)/(b.t-a.t),o={};for(const k in a)o[k]=a[k]+(b[k]-a[k])*u;return o}
+    function run(){const r=solve(p);if(!state.A)state.A=r;else state.B=r;state.current=r;state.t=0;state.running=true;state.last=performance.now();setView('experiment');$('#state-pill').textContent='계산 중';$('#b-legend').hidden=!state.B;toast(state.B?'실험 B를 실행합니다. 주황색 곡선으로 A와 비교하세요.':'실험 A를 시작합니다. 다음 실행은 B로 기록됩니다.');requestAnimationFrame(animate)}function animate(now){if(!state.running)return;state.t+=Math.min(.04,(now-state.last)/1000);state.last=now;const d=sample(state.current,state.t);motion(d);live(d);drawGraph();if(state.t>=6.2){state.running=false;$('#state-pill').textContent='실험 완료';toast('실험 완료. 결과 비교에서 진폭과 안정화 시간을 확인하세요.');updateResults();return}requestAnimationFrame(animate)}function motion(d){const by=-d.zs*300,wy=-d.zu*280,rel=(d.zs-d.zu)*140;$('#body-shift').setAttribute('transform',`translate(0 ${by.toFixed(2)})`);$('#front-assembly').setAttribute('transform',`translate(0 ${wy.toFixed(2)})`);$('#rear-assembly').setAttribute('transform',`translate(0 ${(wy*.65).toFixed(2)})`);const sc=Math.max(.72,Math.min(1.22,1-rel/105));$('#spring-group').setAttribute('transform',`translate(0 ${by.toFixed(2)}) scale(1 ${sc.toFixed(3)})`);$('#damper-group').setAttribute('transform',`translate(0 ${(by+rel*.3).toFixed(2)})`);const a=(state.t*(state.current.q.speed/3.6)/.47*57.3)%360;$('#front-spokes').setAttribute('transform',`rotate(${a.toFixed(1)} 850 439)`);$('.bump').setAttribute('opacity',d.road>0?'1':'.84')}function live(d){$('#z-s').textContent=`${d.zs.toFixed(3)} m`;$('#v-s').textContent=`${d.vs.toFixed(3)} m/s`;$('#def').textContent=`${d.spring.toFixed(3)} m`;$('#acc').textContent=`${d.acc.toFixed(3)} m/s²`}
+    function prop(){return state.graph==='body'?'zs':state.graph==='velocity'?'vs':'spring'}function drawGraph(){const R=graph.getBoundingClientRect(),px=Math.min(devicePixelRatio||1,2);if(R.width<2)return;graph.width=R.width*px;graph.height=R.height*px;gctx.setTransform(px,0,0,px,0,0);const w=R.width,h=R.height,pad={l:46,r:12,t:10,b:23},runs=[state.A,state.B].filter(Boolean),k=prop();gctx.clearRect(0,0,w,h);if(!runs.length){gctx.fillStyle='#8197a1';gctx.font='11px sans-serif';gctx.textAlign='center';gctx.fillText('방지턱 실험을 실행하면 결과가 여기에 표시됩니다.',w/2,h/2);return}let max=.006;runs.forEach(r=>r.data.forEach(d=>max=Math.max(max,Math.abs(d[k]))));max*=1.2;const x=t=>pad.l+(w-pad.l-pad.r)*t/6.2,y=v=>pad.t+(h-pad.t-pad.b)*(.5-v/(2*max));gctx.strokeStyle='#e2eaec';gctx.lineWidth=1;gctx.fillStyle='#7d929c';gctx.font='9px ui-monospace,monospace';gctx.textAlign='right';for(let i=-2;i<=2;i++){let yy=y(i*max/2);gctx.beginPath();gctx.moveTo(pad.l,yy);gctx.lineTo(w-pad.r,yy);gctx.stroke();gctx.fillText((i*max/2).toFixed(3),pad.l-5,yy+3)}gctx.textAlign='center';for(let i=0;i<=3;i++){let xx=x(i*2);gctx.beginPath();gctx.moveTo(xx,pad.t);gctx.lineTo(xx,h-pad.b);gctx.stroke();gctx.fillText(`${i*2}`,xx,h-6)}runs.forEach((r,i)=>{gctx.beginPath();r.data.forEach((d,j)=>j?gctx.lineTo(x(d.t),y(d[k])):gctx.moveTo(x(d.t),y(d[k])));gctx.strokeStyle=i?'#f18c45':'#13a8a8';gctx.lineWidth=i?1.5:2;gctx.stroke()});if(state.running){const xx=x(state.t);gctx.strokeStyle='#607b86';gctx.setLineDash([3,3]);gctx.beginPath();gctx.moveTo(xx,pad.t);gctx.lineTo(xx,h-pad.b);gctx.stroke();gctx.setLineDash([])}}
+    function facts(r){if(!r)return null;const d=r.data,peak=Math.max(...d.map(x=>Math.abs(x.zs))),acc=Math.max(...d.map(x=>Math.abs(x.acc)));let stable=6.2;for(let i=d.length-1;i>=0;i--)if(Math.abs(d[i].zs)>.003||Math.abs(d[i].vs)>.012){stable=d[i].t;break}return {peak,acc,stable}}function updateResults(){const a=facts(state.A),b=facts(state.B),f=(x,u)=>x?`${x.toFixed(u==='s'?2:3)} ${u}`:'–';$('#a-z').textContent=f(a?.peak,'m');$('#a-a').textContent=f(a?.acc,'m/s²');$('#a-t').textContent=f(a?.stable,'s');$('#b-z').textContent=f(b?.peak,'m');$('#b-a').textContent=f(b?.acc,'m/s²');$('#b-t').textContent=f(b?.stable,'s');if(!a){$('#results-intro').textContent='먼저 방지턱 실험에서 A를 실행해 주세요. 결과는 곡선과 수치로 함께 해석됩니다.';return}if(!b){$('#results-intro').textContent='실험 A가 기록되었습니다. 변수 하나를 바꿔 B를 실행하면 그래프와 수치를 겹쳐 비교할 수 있습니다.';$('#result-message').textContent='다음 실험에서는 감쇠 계수를 높여 보세요. 진폭뿐 아니라 안정화 시간도 함께 관찰해야 합니다.';return}const ca=state.A.q.c,cb=state.B.q.c,ka=state.A.q.k,kb=state.B.q.k;$('#results-intro').textContent='A와 B는 같은 방지턱을 통과했습니다. 표의 수치는 그래프와 동일한 2-DOF 계산에서 추출했습니다.';$('#result-message').textContent=cb>ca?'B는 감쇠 계수가 더 커 스프링의 반복 운동 에너지가 더 빨리 소산됩니다. 잔여 진동과 안정화 시간이 줄어드는 경향을 그래프에서 확인하세요.':cb<ca?'B는 감쇠 계수가 더 작아 스프링의 반복 진동이 오래 남습니다. 파형이 더 길게 이어지는지 확인해 보세요.':kb>ka?'B는 더 단단한 스프링입니다. 같은 입력에서 스프링 변형은 줄 수 있지만, 고유진동수와 충격 전달 특성도 바뀝니다.':'두 조건의 차이는 속도 또는 스프링 강성 변화에서 왔습니다. 최고 변위와 최고 가속도를 함께 읽어 보세요.'}
+    function renderLesson(){const [title,text,key]=lessons[state.lesson];$('#lesson-no').textContent=`${String(state.lesson+1).padStart(2,'0')} / 05`;$('#lesson-title').textContent=title;$('#lesson-text').textContent=text;$('#lesson-dots').innerHTML=lessons.map((_,i)=>`<i class="${i<=state.lesson?'on':''}"></i>`).join('');$('#prev-lesson').style.visibility=state.lesson?'visible':'hidden';$('#next-lesson').textContent=state.lesson===4?'완료':'다음';$('#quiz').hidden=state.lesson!==4;selectPart(key)}
+    $('#enter').onclick=()=>{launch.style.display='none';app.classList.add('ready');selectPart('body');setView('structure');toast('관찰할 부품을 선택하세요. 실험은 2-DOF 물리 모델로 계산됩니다.')};$$('.nav-button').forEach(b=>b.onclick=()=>setView(b.dataset.view));$$('.part').forEach(e=>e.onclick=()=>{setView('structure');selectPart(e.dataset.part)});$$('#part-buttons button').forEach(b=>b.onclick=()=>selectPart(b.dataset.part));$('#run').onclick=run;[['speed','speed-label',v=>`${v} km/h`,v=>p.speed=+v],['stiffness','k-label',v=>`${v} kN/m`,v=>p.k=+v*1000],['damping','c-label',v=>`${(+v).toLocaleString()} N·s/m`,v=>p.c=+v]].forEach(([id,l,fmt,set])=>{const e=$('#'+id),u=()=>{set(e.value);$('#'+l).textContent=fmt(e.value)};e.oninput=u;u()});$$('.tabs button').forEach(b=>b.onclick=()=>{ $$('.tabs button').forEach(x=>x.classList.toggle('active',x===b));state.graph=b.dataset.graph;const T={body:['차체 변위–시간 그래프','가로축 시간 (s) · 세로축 차체 변위 (m)'],velocity:['차체 속도–시간 그래프','가로축 시간 (s) · 세로축 차체 속도 (m/s)'],spring:['스프링 변형–시간 그래프','가로축 시간 (s) · 세로축 스프링 변형 (m)']}[state.graph];$('#graph-title').textContent=T[0];$('#graph-subtitle').textContent=T[1];drawGraph()});$('#next-lesson').onclick=()=>{if(state.lesson<4){state.lesson++;renderLesson()}else{setView('experiment');toast('이제 변수를 바꿔 직접 검증해 보세요.')}};$('#prev-lesson').onclick=()=>{if(state.lesson){state.lesson--;renderLesson()}};$$('#quiz button').forEach(b=>b.onclick=()=>{$('#feedback').textContent=b.dataset.answer==='yes'?'정답입니다. 강성이 커지면 차체–휠 계의 고유진동수가 높아집니다. 그러나 승차감은 감쇠와 속도까지 함께 봐야 합니다.':'스프링은 충격을 없애는 장치가 아닙니다. 강성은 변형과 고유진동 특성을 바꾸며, 진동을 줄이는 핵심 역할은 댐퍼가 담당합니다.'});addEventListener('resize',drawGraph);selectPart('body')})();
+  </script>
+  <script type="text/plain" data-disabled="2d-drive-upgrade">
+  (() => {
+    const NS = 'http://www.w3.org/2000/svg';
+    const q = (s) => document.querySelector(s);
+    const make = (tag, attrs) => { const node = document.createElementNS(NS, tag); Object.entries(attrs).forEach(([k,v]) => node.setAttribute(k, v)); return node; };
+    const body = q('#body-part');
+    if (body) {
+      const lowerDepth = make('path', { class:'body-depth', d:'M151 457 208 461 237 443 361 443 391 481 782 481 812 443 932 443 957 480 1040 473 1049 395 1040 457 957 464 932 427 812 427 782 465 391 465 361 427 237 427 208 461Z' });
+      const roofSurface = make('path', { class:'top-surface', d:'M458 224 486 200 648 185 779 211 776 232 653 211Z' });
+      const hoodSurface = make('path', { class:'top-surface', d:'M776 232 808 250 910 333 887 333Z' });
+      body.insertBefore(lowerDepth, body.firstChild);
+      body.insertBefore(roofSurface, body.children[2]);
+      body.insertBefore(hoodSurface, body.children[3]);
+    }
+    [['#rear-assembly',297,439,76,70],['#front-assembly',850,439,77,71]].forEach(([selector,cx,cy,rx,ry]) => {
+      const group = q(selector); if (!group) return;
+      const shadow = make('ellipse', { cx, cy:cy+8, rx, ry, fill:'#102f40', opacity:'.34' });
+      group.insertBefore(shadow, group.firstChild);
+      const gloss = make('path', { class:'wheel-gloss', d:`M${cx-rx*.56} ${cy-ry*.34}c${rx*.36}-${ry*.44} ${rx*.78}-${ry*.44} ${rx*1.12} 0` });
+      group.appendChild(gloss);
+    });
+    const stage = q('.stage');
+    const status = q('#state-pill');
+    const moveTargets = ['#body-shift','#spring-group','#damper-group','#rear-assembly','#front-assembly'].map(q).filter(Boolean);
+    let travelFrame = 0;
+    function resetTravel() {
+      cancelAnimationFrame(travelFrame);
+      moveTargets.forEach(node => { node.style.translate = ''; });
+      q('#vehicle-art').classList.remove('driving');
+      document.querySelectorAll('.callout,.callout-line').forEach(node => { node.style.opacity = ''; });
+    }
+    function playTravel() {
+      resetTravel();
+      const speed = Number(q('#speed')?.value || 30);
+      const pixelsPerSecond = 42 + speed * .8;
+      const impactAt = .65;
+      const startX = 726 - 850 - impactAt * pixelsPerSecond;
+      const started = performance.now();
+      stage.classList.add('testing');
+      q('#vehicle-art').classList.add('driving');
+      document.querySelectorAll('.callout,.callout-line').forEach(node => { node.style.opacity = '.12'; });
+      function frame(now) {
+        const t = Math.min(6.2, (now - started) / 1000);
+        const x = startX + t * pixelsPerSecond;
+        moveTargets.forEach(node => { node.style.translate = `${x.toFixed(1)}px 0px`; });
+        if (t < 6.2) travelFrame = requestAnimationFrame(frame);
+        else { stage.classList.remove('testing'); if (status) status.textContent = '주행 완료'; }
+      }
+      travelFrame = requestAnimationFrame(frame);
+    }
+    q('#run')?.addEventListener('click', playTravel, true);
+    document.querySelectorAll('[data-view="structure"],[data-view="learn"]').forEach(button => button.addEventListener('click', resetTravel));
+  })();
+  </script>
+  <script type="text/plain" src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js" data-disabled="three-runtime"></script>
+  <script type="text/plain" src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js" data-disabled="three-loader"></script>
+  <script type="text/plain" data-disabled="three-viewer">
+  (() => {
+    const stage = document.querySelector('.stage');
+    const q = (s) => document.querySelector(s);
+    const style = document.createElement('style');
+    style.textContent = `
+      #vehicle-3d{position:absolute;inset:0;z-index:1;opacity:0;pointer-events:none;transition:opacity .45s;background:linear-gradient(155deg,#d9eef1,#f8fcfc 58%,#a7c1c8)}
+      .three-ready #vehicle-3d{opacity:1;pointer-events:auto}.three-ready #vehicle-art{opacity:0;pointer-events:none}
+      #vehicle-3d canvas{width:100%;height:100%;display:block;cursor:grab}#vehicle-3d canvas:active{cursor:grabbing}
+      .orbit-help{position:absolute;z-index:4;right:17px;bottom:14px;background:rgba(7,35,48,.83);border:1px solid rgba(189,242,238,.35);color:#dffffa;padding:8px 10px;border-radius:6px;font-size:10px;line-height:1.55;pointer-events:none}.orbit-help b{color:#86f2dc}
+      .three-loading{position:absolute;inset:0;display:grid;place-items:center;color:#345e6a;font-size:12px;font-weight:800;letter-spacing:.08em;pointer-events:none}.three-loading i{display:inline-block;width:8px;height:8px;margin-right:7px;border-radius:50%;background:#13a8a8;box-shadow:0 0 0 5px rgba(19,168,168,.13)}
+      .stage.testing .stage-header,.stage.testing .scene-note{opacity:0;transform:translateY(-10px);transition:opacity .25s,transform .25s}
+    `;
+    document.head.appendChild(style);
+    if (!stage || !window.THREE || !THREE.GLTFLoader) return;
+    const shell = document.createElement('div'); shell.id = 'vehicle-3d';
+    shell.innerHTML = '<div class="three-loading"><span><i></i>3D 차량 모델 준비 중</span></div><div class="orbit-help"><b>360° 관찰</b><br>드래그: 회전 · 휠: 확대</div>';
+    stage.appendChild(shell);
+    const renderer = new THREE.WebGLRenderer({antialias:true,alpha:true}); renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15; shell.appendChild(renderer.domElement);
+    const scene = new THREE.Scene(); scene.fog = new THREE.Fog(0xe1f2f3,15,40);
+    const camera = new THREE.PerspectiveCamera(43,1,.05,100); const target = new THREE.Vector3(0,.75,0); let radius=7.1,yaw=.72,pitch=.24;
+    const hemi = new THREE.HemisphereLight(0xe7fbff,0x274652,2.8); scene.add(hemi); const key = new THREE.DirectionalLight(0xffffff,3.1); key.position.set(5,9,5); key.castShadow=true; key.shadow.mapSize.set(2048,2048); scene.add(key); const rim = new THREE.DirectionalLight(0x5dd6e1,1.2);rim.position.set(-6,4,-5);scene.add(rim);
+    const road = new THREE.Mesh(new THREE.BoxGeometry(35,.22,9),new THREE.MeshStandardMaterial({color:0x384c54,roughness:.82}));road.position.y=-.16;road.receiveShadow=true;scene.add(road);
+    const paint = new THREE.MeshStandardMaterial({color:0x1888ae,metalness:.62,roughness:.22}); const rubber = new THREE.MeshStandardMaterial({color:0x111a20,roughness:.82}); const alloy = new THREE.MeshStandardMaterial({color:0xc7d9dd,metalness:.9,roughness:.2});
+    const fallback = new THREE.Group(); fallback.visible=false; scene.add(fallback);
+    function box(w,h,d,x,y,z,mat,bevel=0){const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;fallback.add(mesh);return mesh}
+    function buildFallback(){box(3.9,.7,1.75,0,.72,0,paint);box(2.15,.65,1.54,-.15,1.26,0,paint);box(1.25,.2,1.73,1.65,.96,0,paint);const glass=new THREE.MeshStandardMaterial({color:0x275e70,metalness:.35,roughness:.12,transparent:true,opacity:.78});box(1.35,.38,1.56,-.18,1.38,0,glass);for(const x of [-1.35,1.38])for(const z of [-.92,.92]){const tire=new THREE.Mesh(new THREE.CylinderGeometry(.43,.22,24),rubber);tire.rotation.x=Math.PI/2;tire.position.set(x,.35,z);tire.castShadow=true;fallback.add(tire);const rimM=new THREE.Mesh(new THREE.CylinderGeometry(.27,.235,20),alloy);rimM.rotation.x=Math.PI/2;rimM.position.set(x,.35,z);fallback.add(rimM)}}buildFallback();
+    const vehicle = new THREE.Group(); scene.add(vehicle); let modelReady=false, driveStart=0, driveResponse=null;
+    const bumpMat=new THREE.MeshStandardMaterial({color:0xf4bf3d,roughness:.7}); const bump=new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,8.3,30,1,false,0,Math.PI),bumpMat);bump.rotation.z=Math.PI/2;bump.rotation.x=Math.PI/2;bump.scale.y=.22;bump.castShadow=true;bump.receiveShadow=true;scene.add(bump);
+    const module = new THREE.Group(); scene.add(module); module.position.set(1.25,.48,1.3);
+    const moduleTire=new THREE.Mesh(new THREE.CylinderGeometry(.49,.20,28),rubber);moduleTire.rotation.x=Math.PI/2;moduleTire.castShadow=true;module.add(moduleTire);const moduleRim=new THREE.Mesh(new THREE.CylinderGeometry(.29,.214,20),alloy);moduleRim.rotation.x=Math.PI/2;module.add(moduleRim);
+    const coilPoints=[];for(let i=0;i<=130;i++){const u=i/130,a=u*Math.PI*14;coilPoints.push(new THREE.Vector3(Math.cos(a)*.19,(u-.5)*.92,Math.sin(a)*.19))}const coil=new THREE.Line(new THREE.BufferGeometry().setFromPoints(coilPoints),new THREE.LineBasicMaterial({color:0x16b6aa}));coil.position.y=.72;module.add(coil);const damperOuter=new THREE.Mesh(new THREE.CylinderGeometry(.075,.075,.5,14),new THREE.MeshStandardMaterial({color:0x174c68,metalness:.7,roughness:.25}));damperOuter.position.set(.36,.56,0);module.add(damperOuter);const rod=new THREE.Mesh(new THREE.CylinderGeometry(.032,.032,.55,10),alloy);rod.position.set(.36,1.05,0);module.add(rod);
+    const anchors={body:new THREE.Vector3(0,.85,0),spring:new THREE.Vector3(1.25,1.05,1.3),damper:new THREE.Vector3(1.6,.95,1.3),wheel:new THREE.Vector3(1.25,.38,1.3),tire:new THREE.Vector3(1.25,.35,1.3),road:new THREE.Vector3(-1.5,0,0)};
+    function fit(){const r=shell.getBoundingClientRect();camera.aspect=Math.max(.1,r.width/r.height);camera.updateProjectionMatrix();renderer.setSize(r.width,r.height,false)}function updateCamera(){const cp=Math.cos(pitch);camera.position.set(target.x+radius*Math.sin(yaw)*cp,target.y+radius*Math.sin(pitch),target.z+radius*Math.cos(yaw)*cp);camera.lookAt(target)}
+    let down=false,lastX=0,lastY=0;shell.addEventListener('pointerdown',e=>{down=true;lastX=e.clientX;lastY=e.clientY;shell.setPointerCapture(e.pointerId)});shell.addEventListener('pointermove',e=>{if(!down)return;yaw-=(e.clientX-lastX)*.009;pitch=Math.max(-.15,Math.min(1.15,pitch-(e.clientY-lastY)*.009));lastX=e.clientX;lastY=e.clientY});shell.addEventListener('pointerup',()=>down=false);shell.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(3.1,Math.min(11,radius+e.deltaY*.008))},{passive:false});
+    let focusTween=null; function focus(part){const point=anchors[part]||anchors.body;focusTween={from:target.clone(),to:point.clone(),fromRadius:radius,toRadius:part==='body'?6.4:3.1,t:0};}document.querySelectorAll('[data-part]').forEach(node=>node.addEventListener('click',()=>focus(node.dataset.part)));
+    function roadInput(t,speed){const start=.65,d=.72/(speed/3.6),h=.075;if(t<start||t>start+d)return {z:0,v:0};const u=(t-start)/d;return {z:h*Math.sin(Math.PI*u)**2,v:h*Math.sin(2*Math.PI*u)*Math.PI/d}}function deriv(y,t,p){const r=roadInput(t,p.speed),fs=p.k*(y[0]-y[2])+p.c*(y[1]-y[3]),ft=p.kt*(y[2]-r.z)+p.ct*(y[3]-r.v);return[y[1],-fs/p.ms,y[3],(fs-ft)/p.mu]}function rk(y,t,h,p){const a=deriv(y,t,p),b=deriv(y.map((v,i)=>v+a[i]*h*.5),t+h*.5,p),c=deriv(y.map((v,i)=>v+b[i]*h*.5),t+h*.5,p),d=deriv(y.map((v,i)=>v+c[i]*h),t+h,p);return y.map((v,i)=>v+h*(a[i]+2*b[i]+2*c[i]+d[i])/6)}function makeResponse(p){let y=[0,0,0,0],d=[];for(let t=0;t<=6.2;t+=.008){d.push({t,zs:y[0],zu:y[2],spring:y[0]-y[2]});y=rk(y,t,.008,p)}return d}function sampleResponse(d,t){const i=Math.min(d.length-2,Math.max(0,Math.floor(t/.008))),a=d[i],b=d[i+1],u=Math.max(0,Math.min(1,(t-a.t)/(b.t-a.t)));return{zs:a.zs+(b.zs-a.zs)*u,zu:a.zu+(b.zu-a.zu)*u,spring:a.spring+(b.spring-a.spring)*u}}
+    q('#run')?.addEventListener('click',()=>{const p={ms:350,mu:45,kt:190000,ct:260,speed:+q('#speed').value,k:+q('#stiffness').value*1000,c:+q('#damping').value};driveResponse=makeResponse(p);driveStart=performance.now();const travel=.9+p.speed*.03;bump.position.x=-4+.65*travel;focusTween={from:target.clone(),to:new THREE.Vector3(-1,.6,0),fromRadius:radius,toRadius:7.3,t:0};},true);
+    function loop(now){if(focusTween){focusTween.t=Math.min(1,focusTween.t+.035);const e=1-Math.pow(1-focusTween.t,3);target.lerpVectors(focusTween.from,focusTween.to,e);radius=focusTween.fromRadius+(focusTween.toRadius-focusTween.fromRadius)*e;if(focusTween.t===1)focusTween=null}if(driveStart){const t=Math.min(6.2,(now-driveStart)/1000),speed=+q('#speed').value,travel=.9+speed*.03,r=sampleResponse(driveResponse,t);vehicle.position.x=-4+t*travel;vehicle.position.y=r.zs*2.4;module.position.y=.48+r.zu*2.2;coil.scale.y=Math.max(.68,1-r.spring*3);rod.position.y=1.05-r.spring*1.2;if(t>=6.2)driveStart=0}updateCamera();renderer.render(scene,camera);requestAnimationFrame(loop)}
+    new THREE.GLTFLoader().load('https://threejs.org/examples/models/gltf/ferrari.glb',gltf=>{const raw=gltf.scene;const box=new THREE.Box3().setFromObject(raw);const size=box.getSize(new THREE.Vector3());const center=box.getCenter(new THREE.Vector3());raw.position.sub(center);const scale=3.8/Math.max(size.x,size.z);raw.scale.setScalar(scale);raw.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});vehicle.add(raw);modelReady=true;stage.classList.add('three-ready');shell.querySelector('.three-loading').remove();fit()},undefined,()=>{fallback.visible=true;vehicle.add(fallback);stage.classList.add('three-ready');shell.querySelector('.three-loading').innerHTML='<span><i></i>오프라인 3D 차량 모드</span>';fit()});
+    addEventListener('resize',fit);fit();updateCamera();requestAnimationFrame(loop);
+  })();
+  </script>
+  <script>
+  (() => {
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => [...document.querySelectorAll(selector)];
+    const descriptions = {
+      body: {
+        code: '차체 관찰', name: '차체',
+        text: '차체는 사람이 타는 자동차의 큰 몸통입니다. 방지턱을 넘을 때 바퀴보다 천천히, 작게 움직여야 몸이 덜 흔들립니다.',
+        formula: '차체는 천천히 움직일수록 편안해요.',
+        desc: '바퀴의 큰 충격이 그대로 차체까지 올라오지 않게 하는 것이 서스펜션의 목표입니다.',
+        insight: '관찰 포인트: 방지턱을 넘을 때 차체는 바퀴보다 늦게, 더 작게 움직입니다.',
+        box: [95, 150, 1015, 380]
+      },
+      spring: {
+        code: '스프링 관찰', name: '스프링',
+        text: '스프링은 눌리면 짧아지고, 다시 원래 길이로 펴지려 합니다. 방지턱의 충격을 한 번 받아서 차체로 바로 전달되지 않게 해 줍니다.',
+        formula: '눌리면 줄고, 놓으면 다시 펴져요.',
+        desc: '단단한 스프링은 덜 눌리고, 부드러운 스프링은 더 많이 눌립니다.',
+        insight: '관찰 포인트: 바퀴가 위로 올라갈 때 스프링이 먼저 압축됩니다.',
+        box: [745, 285, 220, 210]
+      },
+      damper: {
+        code: '댐퍼 관찰', name: '댐퍼 (쇼크 업소버)',
+        text: '댐퍼는 스프링 때문에 자동차가 계속 위아래로 튀는 것을 줄여 줍니다. 쉽게 말해 흔들림을 빨리 멈추게 하는 장치입니다.',
+        formula: '흔들림을 빨리 멈춰 줘요.',
+        desc: '댐퍼가 없으면 스프링은 여러 번 튀면서 차체를 오래 흔듭니다.',
+        insight: '관찰 포인트: 댐퍼가 작동하면 방지턱 뒤의 출렁임이 더 빨리 줄어듭니다.',
+        box: [810, 285, 210, 225]
+      },
+      tire: {
+        code: '타이어 관찰', name: '타이어',
+        text: '타이어는 노면을 가장 먼저 만나는 부품입니다. 방지턱을 만나면 타이어와 휠이 먼저 위로 움직이고, 그 다음에 충격이 서스펜션으로 전달됩니다.',
+        formula: '방지턱 충격을 가장 먼저 받아요.',
+        desc: '타이어도 조금 눌리면서 노면의 충격을 줄이는 데 도움을 줍니다.',
+        insight: '관찰 포인트: 타이어가 먼저 움직이고, 차체는 나중에 반응합니다.',
+        box: [705, 322, 285, 240]
+      },
+      wheel: {
+        code: '휠 관찰', name: '휠 · 브레이크 디스크',
+        text: '휠은 타이어와 함께 방지턱을 직접 넘는 부품입니다. 가벼울수록 노면의 높낮이를 더 빠르게 따라갈 수 있습니다.',
+        formula: '타이어와 함께 위아래로 움직여요.',
+        desc: '휠은 차체보다 먼저 크게 움직이고, 스프링과 댐퍼가 그 움직임을 차체에 부드럽게 전달합니다.',
+        insight: '관찰 포인트: 휠의 움직임은 크지만 차체의 움직임은 더 작아야 합니다.',
+        box: [720, 330, 260, 225]
+      },
+      road: {
+        code: '방지턱 관찰', name: '방지턱 · 노면',
+        text: '방지턱은 바퀴를 짧은 시간에 위로 밀어 올립니다. 같은 방지턱도 더 빠르게 지나가면 더 큰 충격처럼 느껴질 수 있습니다.',
+        formula: '방지턱이 바퀴를 위로 밀어 올려요.',
+        desc: '속도가 빠르면 방지턱을 지나는 시간이 짧아져 자동차가 더 크게 반응할 수 있습니다.',
+        insight: '관찰 포인트: 속도를 바꾼 뒤 그래프의 최고점이 어떻게 달라지는지 보세요.',
+        box: [600, 400, 400, 200]
+      }
+    };
+    const svg = $('#vehicle-art');
+    let frame = 0;
+    function moveView(target) {
+      if (!svg) return;
+      cancelAnimationFrame(frame);
+      const base = svg.viewBox.baseVal;
+      const from = [base.x, base.y, base.width, base.height];
+      const started = performance.now();
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const duration = reduced ? 0 : 620;
+      function step(now) {
+        const t = duration ? Math.min(1, (now - started) / duration) : 1;
+        const eased = 1 - Math.pow(1 - t, 3);
+        const next = from.map((value, index) => value + (target[index] - value) * eased);
+        svg.setAttribute('viewBox', next.map(value => value.toFixed(2)).join(' '));
+        if (t < 1) frame = requestAnimationFrame(step);
+      }
+      frame = requestAnimationFrame(step);
+    }
+    function observe(part) {
+      const data = descriptions[part];
+      if (!data) return;
+      $$('#part-buttons button').forEach(button => button.classList.toggle('active', button.dataset.part === part));
+      $$('.part').forEach(node => node.classList.toggle('selected', node.dataset.part === part));
+      $('#part-code').textContent = data.code;
+      $('#part-name').textContent = data.name;
+      $('#part-text').textContent = data.text;
+      $('#formula').textContent = data.formula;
+      $('#formula').classList.add('simple-observation');
+      $('#formula-desc').textContent = data.desc;
+      $('#insight').textContent = data.insight;
+      moveView(data.box);
+    }
+    const style = document.createElement('style');
+    style.textContent = `
+      #formula.simple-observation { font-family: inherit; font-size: 15px; letter-spacing: -.035em; line-height: 1.35; }
+      .part.selected { filter: drop-shadow(0 0 10px rgba(224,48,55,.68)) !important; }
+      .part.selected .highlight-fill { fill: #df3d43 !important; }
+      .part.selected .highlight-stroke { stroke: #df3d43 !important; stroke-width: 9 !important; }
+      #part-buttons button.active { border-color:#df3d43; background:#fff0f0; color:#b7252b; }
+    `;
+    document.head.appendChild(style);
+    $$('.part,[data-part]').forEach(node => node.addEventListener('click', () => {
+      const part = node.dataset.part;
+      setTimeout(() => observe(part), 0);
+    }));
+    $('#enter')?.addEventListener('click', () => setTimeout(() => observe('body'), 0));
+    $('#next-lesson')?.addEventListener('click', () => {
+      const title = $('#lesson-title')?.textContent || '';
+      const match = Object.entries(descriptions).find(([, data]) => title.includes(data.name.replace(' (쇼크 업소버)', '')));
+      if (match) setTimeout(() => observe(match[0]), 0);
+    });
+  })();
+  </script>
+  <script>
+  (() => {
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => [...document.querySelectorAll(selector)];
+    const svg = $('#vehicle-art');
+    const overview = [0, 0, 1200, 620];
+    let activePart = null;
+    let overviewFrame = 0;
+    const style = document.createElement('style');
+    style.textContent = `
+      /* 화면 밖으로 잘리는 설명 말풍선은 관찰 화면에서 사용하지 않습니다. */
+      #vehicle-art .callout, #vehicle-art .callout-line, #vehicle-art text:not(.part-label) { display:none; }
+      #vehicle-art.isolating .part { opacity:.27; filter:none !important; transition:opacity .32s ease,filter .32s ease; }
+      #vehicle-art.isolating .part.selected { opacity:1; filter:drop-shadow(0 0 12px rgba(223,61,67,.72)) !important; }
+      #vehicle-art.isolating .part.selected .highlight-fill { fill:#df3d43 !important; }
+      #vehicle-art.isolating .part.selected .highlight-stroke { stroke:#df3d43 !important; stroke-width:9 !important; }
+      .speed-preview { margin:-5px 0 15px; padding:9px 10px 8px; border:1px solid #d9e7e9; border-radius:7px; background:#f7fbfb; }
+      .speed-preview-head { display:flex; justify-content:space-between; gap:8px; color:#53727e; font-size:10px; margin-bottom:7px; }.speed-preview-head b{color:#157d80}
+      .speed-track { height:20px; overflow:hidden; position:relative; border-radius:5px; background:repeating-linear-gradient(90deg,#dce9eb 0 16px,transparent 16px 28px); border-bottom:2px solid #879da4; }
+      .speed-car { position:absolute; top:-2px; left:-26px; font-size:17px; line-height:20px; animation:drive-preview var(--preview-duration,2.4s) linear infinite; }
+      @keyframes drive-preview { from { transform:translateX(0); } to { transform:translateX(255px); } }
+    `;
+    document.head.appendChild(style);
+    function animateOverview() {
+      if (!svg) return;
+      cancelAnimationFrame(overviewFrame);
+      const base = svg.viewBox.baseVal;
+      const from = [base.x, base.y, base.width, base.height];
+      const started = performance.now();
+      function frame(now) {
+        const t = Math.min(1, (now - started) / 480);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const next = from.map((value, index) => value + (overview[index] - value) * eased);
+        svg.setAttribute('viewBox', next.map(value => value.toFixed(2)).join(' '));
+        if (t < 1) overviewFrame = requestAnimationFrame(frame);
+      }
+      overviewFrame = requestAnimationFrame(frame);
+    }
+    function resetObservation() {
+      activePart = null;
+      if (!svg) return;
+      svg.classList.remove('isolating');
+      $$('.part').forEach(node => node.classList.remove('selected'));
+      $$('#part-buttons button').forEach(button => button.classList.remove('active'));
+      animateOverview();
+    }
+    function isolatePart(part) {
+      activePart = part;
+      if (!svg) return;
+      svg.classList.add('isolating');
+      $$('.part').forEach(node => node.classList.toggle('selected', node.dataset.part === part));
+      $$('#part-buttons button').forEach(button => button.classList.toggle('active', button.dataset.part === part));
+    }
+    function selectedHandler(event) {
+      const part = event.currentTarget.dataset.part;
+      const shouldReset = activePart === part;
+      /* 기존 설명·확대 업데이트가 끝난 다음 강조 상태를 적용합니다. */
+      setTimeout(() => shouldReset ? resetObservation() : isolatePart(part), 20);
+    }
+    $$('.part,[data-part]').forEach(node => node.addEventListener('click', selectedHandler));
+    $('#enter')?.addEventListener('click', () => setTimeout(resetObservation, 40), true);
+    $('[data-view="experiment"]')?.addEventListener('click', () => setTimeout(resetObservation, 0), true);
+    $('#run')?.addEventListener('click', () => setTimeout(resetObservation, 0), true);
+
+    const speed = $('#speed');
+    const speedControl = speed?.closest('.control');
+    if (speed && speedControl) {
+      const preview = document.createElement('div');
+      preview.className = 'speed-preview';
+      preview.innerHTML = '<div class="speed-preview-head"><span>속도 감각 미리보기</span><b id="speed-preview-label">보통</b></div><div class="speed-track"><span class="speed-car" aria-hidden="true">🚗</span></div>';
+      speedControl.insertAdjacentElement('afterend', preview);
+      const car = preview.querySelector('.speed-car');
+      const label = preview.querySelector('#speed-preview-label');
+      function updateSpeedPreview() {
+        const value = Number(speed.value);
+        const duration = 3.4 - (value - 10) / 40 * 2.45;
+        car.style.setProperty('--preview-duration', `${duration.toFixed(2)}s`);
+        label.textContent = value <= 20 ? '천천히' : value <= 35 ? '보통' : '빠르게';
+      }
+      speed.addEventListener('input', updateSpeedPreview);
+      updateSpeedPreview();
+    }
+    resetObservation();
+  })();
+  </script>
+  <script>
+  (() => {
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => [...document.querySelectorAll(selector)];
+    const svg = $('#vehicle-art');
+    const graph = $('#graph');
+    const ctx = graph?.getContext('2d');
+    const experimentState = { a:null, b:null, active:null, running:false, time:0, last:0, frame:0, graph:'body' };
+
+    const style = document.createElement('style');
+    style.textContent = `
+      #vehicle-art text, #concept-panel .formula-box { display:none !important; }
+      .experiment-actions { display:flex; gap:7px; margin-top:2px; }.experiment-actions .run { width:50%; margin:0; }.experiment-actions .stop { width:50%; border:1px solid #d5e1e5; border-radius:7px; background:#fff; color:#506d7b; font-size:12px; font-weight:800; }.experiment-actions .stop:hover:not(:disabled){border-color:#d9505d;color:#bb2731;background:#fff5f5}.experiment-actions .stop:disabled{opacity:.45;cursor:not-allowed}
+      .celebration { position:fixed; inset:0; z-index:100; display:grid; place-items:center; background:rgba(10,31,41,.15); pointer-events:none; animation:celebration-fade 4s ease forwards; overflow:hidden; }.celebration-message { position:relative; z-index:2; background:#fff; border:3px solid #f4c754; border-radius:18px; padding:25px 34px; color:#123b52; box-shadow:0 20px 60px rgba(13,58,79,.28); font-weight:900; font-size:clamp(24px,4vw,46px); letter-spacing:-.06em; text-align:center; animation:celebration-pop .55s cubic-bezier(.2,1.5,.45,1) both; }.celebration-message small{display:block;color:#e29a19;font-size:13px;letter-spacing:.05em;margin-top:8px}.firework{position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;background:var(--burst);transform:translate(-50%,-50%);animation:firework-burst 1.45s cubic-bezier(.1,.65,.25,1) var(--delay) forwards}.firework:before,.firework:after{content:"";position:absolute;inset:-5px;border:2px solid var(--burst);border-radius:50%;opacity:.65}@keyframes firework-burst{0%{translate:0 0;opacity:1;scale:.2}70%{opacity:1}100%{translate:var(--x) var(--y);opacity:0;scale:1.25}}@keyframes celebration-pop{from{opacity:0;transform:scale(.55) rotate(-5deg)}to{opacity:1;transform:scale(1) rotate(0)}}@keyframes celebration-fade{0%,83%{opacity:1}100%{opacity:0}}
+    `;
+    document.head.appendChild(style);
+
+    function normalView() {
+      if (!svg) return;
+      svg.classList.remove('isolating');
+      $$('.part').forEach(node => node.classList.remove('selected'));
+      $$('#part-buttons button').forEach(button => button.classList.remove('active'));
+      svg.setAttribute('viewBox', '0 0 1200 620');
+      $('#body-shift')?.setAttribute('transform', 'translate(0 0)');
+      $('#front-assembly')?.setAttribute('transform', 'translate(0 0)');
+      $('#rear-assembly')?.setAttribute('transform', 'translate(0 0)');
+      $('#spring-group')?.setAttribute('transform', 'translate(0 0) scale(1 1)');
+      $('#damper-group')?.setAttribute('transform', 'translate(0 0)');
+    }
+    $$('[data-view]').forEach(button => button.addEventListener('click', () => {
+      if (button.dataset.view !== 'structure') setTimeout(normalView, 0);
+    }, true));
+    $('#run')?.addEventListener('click', normalView, true);
+
+    const runButton = $('#run');
+    const experimentPanel = $('#experiment-panel');
+    let stopButton = null;
+    if (runButton && experimentPanel) {
+      const actions = document.createElement('div');
+      actions.className = 'experiment-actions';
+      runButton.parentNode.insertBefore(actions, runButton);
+      actions.appendChild(runButton);
+      stopButton = document.createElement('button');
+      stopButton.type = 'button'; stopButton.className = 'stop'; stopButton.textContent = '정지'; stopButton.disabled = true;
+      actions.appendChild(stopButton);
+    }
+
+    function roadInput(t, speed) {
+      /* 빠를수록 짧은 시간에 더 큰 충격이 전달되는 교육용 유효 입력입니다. */
+      const start = .65, duration = .72 / (speed / 3.6), impactGain = .55 + Math.max(0, speed - 10) * .13, height = .075 * impactGain;
+      if (t < start || t > start + duration) return {z:0, v:0};
+      const u = (t - start) / duration;
+      return {z:height * Math.sin(Math.PI * u) ** 2, v:height * Math.sin(2 * Math.PI * u) * Math.PI / duration};
+    }
+    function derivative(y, t, p) {
+      const road = roadInput(t, p.speed);
+      const suspension = p.k * (y[0] - y[2]) + p.c * (y[1] - y[3]);
+      const tire = p.kt * (y[2] - road.z) + p.ct * (y[3] - road.v);
+      return [y[1], -suspension / p.ms, y[3], (suspension - tire) / p.mu];
+    }
+    function rk4(y, t, h, p) {
+      const a = derivative(y, t, p);
+      const b = derivative(y.map((v,i) => v + a[i] * h * .5), t + h * .5, p);
+      const c = derivative(y.map((v,i) => v + b[i] * h * .5), t + h * .5, p);
+      const d = derivative(y.map((v,i) => v + c[i] * h), t + h, p);
+      return y.map((v,i) => v + h * (a[i] + 2*b[i] + 2*c[i] + d[i]) / 6);
+    }
+    function solve(p) {
+      const h = .004, data = []; let y = [0,0,0,0];
+      for (let t=0; t<=6.2; t+=h) { const a = derivative(y,t,p); data.push({t,zs:y[0],vs:y[1],zu:y[2],acc:a[1],spring:y[0]-y[2]}); y = rk4(y,t,h,p); }
+      return {p:{...p},data};
+    }
+    function sample(run, t) {
+      const d = run.data;
+      if (t <= 0) return d[0]; if (t >= d[d.length-1].t) return d[d.length-1];
+      const i = Math.min(d.length-2, Math.floor(t/.004)), a=d[i], b=d[i+1], u=(t-a.t)/(b.t-a.t);
+      const out={}; Object.keys(a).forEach(key => out[key]=a[key]+(b[key]-a[key])*u); return out;
+    }
+    function paint(d) {
+      const bodyY = -d.zs * 520, wheelY = -d.zu * 370, spring = d.spring * 210;
+      $('#body-shift')?.setAttribute('transform', `translate(0 ${bodyY.toFixed(2)})`);
+      $('#front-assembly')?.setAttribute('transform', `translate(0 ${wheelY.toFixed(2)})`);
+      $('#rear-assembly')?.setAttribute('transform', `translate(0 ${(wheelY*.58).toFixed(2)})`);
+      $('#spring-group')?.setAttribute('transform', `translate(0 ${bodyY.toFixed(2)}) scale(1 ${Math.max(.64,Math.min(1.25,1-spring/100)).toFixed(3)})`);
+      $('#damper-group')?.setAttribute('transform', `translate(0 ${(bodyY+spring*.35).toFixed(2)})`);
+      $('#z-s').textContent = `${d.zs.toFixed(3)} m`; $('#v-s').textContent = `${d.vs.toFixed(3)} m/s`;
+      $('#def').textContent = `${d.spring.toFixed(3)} m`; $('#acc').textContent = `${d.acc.toFixed(3)} m/s²`;
+    }
+    function property() { return experimentState.graph === 'body' ? 'zs' : experimentState.graph === 'velocity' ? 'vs' : 'spring'; }
+    function drawGraph() {
+      if (!graph || !ctx) return;
+      const rect=graph.getBoundingClientRect(), ratio=Math.min(devicePixelRatio||1,2); if (rect.width<2) return;
+      graph.width=rect.width*ratio; graph.height=rect.height*ratio; ctx.setTransform(ratio,0,0,ratio,0,0);
+      const w=rect.width,h=rect.height,pad={l:46,r:12,t:10,b:23},runs=[experimentState.a,experimentState.b].filter(Boolean),key=property();
+      ctx.clearRect(0,0,w,h); if (!runs.length) return;
+      let max=.008; runs.forEach(run=>run.data.forEach(d=>max=Math.max(max,Math.abs(d[key])))); max*=1.2;
+      const x=t=>pad.l+(w-pad.l-pad.r)*t/6.2, y=v=>pad.t+(h-pad.t-pad.b)*(.5-v/(2*max));
+      ctx.strokeStyle='#e0eaec';ctx.lineWidth=1;ctx.fillStyle='#718792';ctx.font='9px ui-monospace,monospace';ctx.textAlign='right';
+      for(let i=-2;i<=2;i++){const yy=y(i*max/2);ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(w-pad.r,yy);ctx.stroke();ctx.fillText((i*max/2).toFixed(3),pad.l-5,yy+3)}
+      ctx.textAlign='center';for(let i=0;i<=3;i++){const xx=x(i*2);ctx.beginPath();ctx.moveTo(xx,pad.t);ctx.lineTo(xx,h-pad.b);ctx.stroke();ctx.fillText(`${i*2}`,xx,h-6)}
+      runs.forEach((run,i)=>{ctx.beginPath();run.data.forEach((d,n)=>n?ctx.lineTo(x(d.t),y(d[key])):ctx.moveTo(x(d.t),y(d[key])));ctx.strokeStyle=i?'#f18c45':'#13a8a8';ctx.lineWidth=i?1.6:2.2;ctx.stroke()});
+      if(experimentState.running){const xx=x(experimentState.time);ctx.strokeStyle='#344f5e';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(xx,pad.t);ctx.lineTo(xx,h-pad.b);ctx.stroke();ctx.setLineDash([])}
+    }
+    function facts(run) {
+      if (!run) return null; const d=run.data; const peak=Math.max(...d.map(x=>Math.abs(x.zs))), acc=Math.max(...d.map(x=>Math.abs(x.acc)));
+      let stable=6.2; for(let i=d.length-1;i>=0;i--){if(Math.abs(d[i].zs)>.003||Math.abs(d[i].vs)>.012){stable=d[i].t;break;}} return {peak,acc,stable};
+    }
+    function updateComparison() {
+      const a=facts(experimentState.a),b=facts(experimentState.b),f=(n,u)=>n==null?'–':`${n.toFixed(u==='s'?2:3)} ${u}`;
+      $('#a-z').textContent=f(a?.peak,'m'); $('#a-a').textContent=f(a?.acc,'m/s²'); $('#a-t').textContent=f(a?.stable,'s');
+      $('#b-z').textContent=f(b?.peak,'m'); $('#b-a').textContent=f(b?.acc,'m/s²'); $('#b-t').textContent=f(b?.stable,'s');
+      if (a && b) { const direction=b.peak<a.peak?'작아졌습니다':'커졌습니다'; $('#result-message').textContent=`실험 B의 차체 흔들림은 A보다 ${direction}. 속도·스프링 강성·감쇠 계수가 바뀌면 그래프의 높이와 흔들림이 남는 시간이 함께 달라집니다.`; }
+    }
+    function frame(now) {
+      if (!experimentState.running) return;
+      experimentState.time += Math.min(.04,(now-experimentState.last)/1000); experimentState.last=now;
+      paint(sample(experimentState.active,experimentState.time)); drawGraph();
+      if(experimentState.time>=6.2){experimentState.running=false;stopButton.disabled=true;$('#state-pill').textContent='실험 완료';updateComparison();return;}
+      experimentState.frame=requestAnimationFrame(frame);
+    }
+    function startExperiment() {
+      normalView(); cancelAnimationFrame(experimentState.frame);
+      const p={ms:350,mu:45,kt:190000,ct:260,speed:Number($('#speed').value),k:Number($('#stiffness').value)*1000,c:Number($('#damping').value)};
+      const run=solve(p); if(!experimentState.a) experimentState.a=run; else experimentState.b=run;
+      experimentState.active=run; experimentState.time=0; experimentState.last=performance.now(); experimentState.running=true; stopButton.disabled=false;
+      $('#state-pill').textContent=experimentState.b?'실험 B 실행 중':'실험 A 실행 중'; $('#b-legend').hidden=!experimentState.b; updateComparison();
+      experimentState.frame=requestAnimationFrame(frame);
+    }
+    function stopExperiment() { if(!experimentState.running) return; experimentState.running=false; cancelAnimationFrame(experimentState.frame); stopButton.disabled=true; $('#state-pill').textContent='실험 정지'; drawGraph(); }
+    if(runButton && stopButton) { runButton.onclick=startExperiment; stopButton.onclick=stopExperiment; }
+    $$('[data-view]').forEach(button => button.addEventListener('click', () => {
+      if (button.dataset.view !== 'experiment') { stopExperiment(); normalView(); }
+      if (button.dataset.view === 'experiment' || button.dataset.view === 'results') setTimeout(() => { drawGraph(); updateComparison(); }, 0);
+    }));
+    $$('.tabs button').forEach(button => button.addEventListener('click', () => { experimentState.graph=button.dataset.graph; setTimeout(drawGraph,0); }));
+    addEventListener('resize',drawGraph);
+
+    function celebrate() {
+      if(document.querySelector('.celebration')) return;
+      const layer=document.createElement('div'); layer.className='celebration';
+      layer.innerHTML='<div class="celebration-message">축하합니다! 100점입니다!<small>서스펜션 개념 학습을 완료했어요 🎉</small></div>';
+      const colors=['#f2c84b','#ec5c64','#15a8a8','#4578dc','#a55bd4'];
+      for(let i=0;i<42;i++){const bit=document.createElement('i');bit.className='firework';const angle=Math.random()*Math.PI*2, distance=90+Math.random()*460;bit.style.setProperty('--x',`${Math.cos(angle)*distance}px`);bit.style.setProperty('--y',`${Math.sin(angle)*distance}px`);bit.style.setProperty('--burst',colors[i%colors.length]);bit.style.setProperty('--delay',`${Math.random()*.8}s`);layer.appendChild(bit)}
+      document.body.appendChild(layer);setTimeout(()=>layer.remove(),4000);
+    }
+    $$('#quiz [data-answer="yes"]').forEach(button => button.addEventListener('click', () => setTimeout(celebrate,80)));
+    ['#next-lesson','#prev-lesson'].forEach(selector => $(selector)?.addEventListener('click', () => setTimeout(normalView, 0)));
+    normalView();
+  })();
+  </script>
+  <script>
+  (() => {
+    'use strict';
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => [...document.querySelectorAll(selector)];
+
+    /* Keep the physics model visible, but say what it means in everyday Korean. */
+    const modelCard = $('.model-card');
+    if (modelCard) {
+      modelCard.innerHTML = `
+        <div class="small">이 실험은 이렇게 계산해요</div>
+        <b>차체와 바퀴를 따로 움직이는 모델</b>
+        <p>방지턱을 밟을 때 바퀴와 차체가 각각 어떻게 움직이는지 따로 계산해, 충격이 차체까지 전달되는 과정을 보여 줍니다.</p>
+        <div class="line"></div>`;
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .comparison-spotlight{margin:15px 0 13px;padding:13px;border:2px solid #b9e9e2;border-radius:10px;background:linear-gradient(135deg,#f0fbf9,#f9fdfd);box-shadow:0 8px 18px rgba(16,114,113,.08)}
+      .comparison-spotlight.flash{animation:comparison-flash 1.25s ease both}.comparison-kicker{font-size:10px;font-weight:900;letter-spacing:.08em;color:#0d7672;margin-bottom:9px}.comparison-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}.comparison-card{border-radius:8px;padding:10px;background:#fff;border:1px solid #dfeaec}.comparison-card.a-card{border-top:4px solid #13a8a8}.comparison-card.b-card{border-top:4px solid #f18c45}.comparison-card span{display:block;font-size:10px;font-weight:800;color:#54727f}.comparison-card b{display:block;margin-top:3px;font-size:16px;letter-spacing:-.04em;color:#173c50}.comparison-card small{display:block;margin-top:4px;font-size:9px;line-height:1.45;color:#6b838e}.comparison-verdict{margin:11px 0 0;padding:9px 10px;background:#fff7ec;border-left:4px solid #f18c45;border-radius:4px;color:#675136;font-size:11px;line-height:1.55;font-weight:700}.result-table{margin-top:11px}.result-table th,.result-table td{padding-top:9px!important;padding-bottom:9px!important}.result-message{display:none}@keyframes comparison-flash{0%,100%{transform:translateY(0);box-shadow:0 8px 18px rgba(16,114,113,.08)}45%{transform:translateY(-3px);box-shadow:0 12px 28px rgba(19,168,168,.28)}}
+      .quiz-intro{margin:0 0 9px;font-size:11px;line-height:1.55;color:#4c6d7a}.quiz-question{margin-top:10px;padding-top:10px;border-top:1px solid #dce9e8}.quiz-question:first-of-type{margin-top:0;padding-top:0;border-top:0}.quiz-question b{display:block;font-size:11px;line-height:1.5;color:#173f54}.quiz-question button{transition:.16s}.quiz-question button.correct{border-color:#13a887;background:#e9f8f3;color:#0a7167;font-weight:800}.quiz-question button.wrong{border-color:#e78a80;background:#fff1ef;color:#ad453d}.quiz-progress{margin-top:11px;padding:8px 10px;border-radius:6px;background:#e8f4f3;color:#216b70;font-size:10px;font-weight:800}.quiz-progress.done{background:#fff7df;color:#9b6811}
+      .celebration.six-seconds{animation:celebration-fade-six 6s ease forwards}.celebration.six-seconds .celebration-message small{font-size:14px}.celebration.six-seconds .firework{width:13px;height:13px;animation-duration:1.75s}@keyframes celebration-fade-six{0%,88%{opacity:1}100%{opacity:0}}
+      .speed-dust{pointer-events:none}.speed-dust circle{fill:#e9f0f1}.stage.driving #wheel-part,.stage.driving #rear-wheel-rotor{filter:drop-shadow(0 0 2px rgba(31,86,106,.28))}
+      #vehicle-art .part{cursor:default}
+      .launch{background:radial-gradient(ellipse at 76% 24%,rgba(40,230,213,.34),transparent 29%),radial-gradient(ellipse at 22% 70%,rgba(35,117,221,.35),transparent 38%),linear-gradient(135deg,#030e20 0%,#092c48 47%,#071a38 100%)}.launch:before{content:"";inset:0;width:auto;height:auto;right:auto;top:auto;border:0;border-radius:0;box-shadow:none;background:linear-gradient(112deg,transparent 0 42%,rgba(146,255,244,.07) 42.15% 42.4%,transparent 42.55% 100%),repeating-linear-gradient(90deg,transparent 0 71px,rgba(151,255,244,.08) 72px 74px),linear-gradient(to top,rgba(1,10,23,.88),transparent 54%);mask-image:none}.launch:after{opacity:.5;background:repeating-linear-gradient(90deg,transparent 0 85px,rgba(155,255,245,.18) 86px 88px),repeating-linear-gradient(0deg,transparent 0 52px,rgba(155,255,245,.11) 53px 55px);background-size:auto;mask-image:linear-gradient(to top,black 0 46%,transparent 80%);transform:perspective(500px) rotateX(54deg) scale(1.8);transform-origin:bottom}.launch-card{position:relative;padding:28px 34px;border:1px solid rgba(176,255,247,.21);border-radius:18px;background:linear-gradient(135deg,rgba(6,27,49,.56),rgba(9,45,71,.22));box-shadow:0 22px 90px rgba(0,0,0,.32);backdrop-filter:blur(8px)}.launch-car{z-index:0;bottom:-4vh;opacity:.92;filter:drop-shadow(0 0 28px rgba(82,255,235,.32));animation:hero-float 5.5s ease-in-out infinite}.launch .tag{color:#a8fff0;text-shadow:0 0 18px rgba(116,255,236,.7)}.launch h1{font-size:clamp(40px,6.2vw,76px);text-shadow:0 5px 28px rgba(0,0,0,.4)}.launch .meta{color:#b0dfe4}.launch .start{box-shadow:0 0 0 1px rgba(199,255,247,.45),0 12px 30px rgba(54,227,199,.38)}@keyframes hero-float{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-10px)}}
+      @media(max-width:520px){.comparison-cards{grid-template-columns:1fr}.comparison-card b{font-size:14px}}
+    `;
+    document.head.appendChild(style);
+
+    /* A large, plain-language reading guide keeps the comparison from being missed. */
+    const results = $('#results-panel');
+    if (results && !$('#comparison-spotlight')) {
+      const spotlight = document.createElement('section');
+      spotlight.id = 'comparison-spotlight';
+      spotlight.className = 'comparison-spotlight';
+      spotlight.setAttribute('aria-live', 'polite');
+      spotlight.innerHTML = `
+        <div class="comparison-kicker">★ 가장 먼저 볼 결과</div>
+        <div class="comparison-cards">
+          <article class="comparison-card a-card"><span>실험 A · 기준 조건</span><b id="a-summary">실험을 실행해 주세요</b><small id="a-detail">첫 번째 결과가 여기 기록됩니다.</small></article>
+          <article class="comparison-card b-card"><span>실험 B · 바꾼 조건</span><b id="b-summary">조건을 바꿔 보세요</b><small id="b-detail">두 번째 결과가 여기 기록됩니다.</small></article>
+        </div>
+        <p id="comparison-verdict" class="comparison-verdict">① 실험 A를 실행한 뒤, 속도·스프링·감쇠 중 하나를 바꿔 ② 실험 B를 실행하세요. 두 카드와 그래프의 차이를 함께 비교합니다.</p>`;
+      const heading = results.querySelector('.heading');
+      heading?.insertAdjacentElement('afterend', spotlight);
+    }
+
+    const readNumber = (selector) => {
+      const value = $(selector)?.textContent.match(/-?\d+(?:\.\d+)?/);
+      return value ? Number(value[0]) : null;
+    };
+    const pretty = (value, digits = 3) => value == null ? '–' : `${value.toFixed(digits)}`;
+    function refreshComparisonGuide() {
+      const aPeak = readNumber('#a-z'), bPeak = readNumber('#b-z');
+      const aAcc = readNumber('#a-a'), bAcc = readNumber('#b-a');
+      const aTime = readNumber('#a-t'), bTime = readNumber('#b-t');
+      const aSummary = $('#a-summary'), bSummary = $('#b-summary'), aDetail = $('#a-detail'), bDetail = $('#b-detail'), verdict = $('#comparison-verdict');
+      if (!aSummary || !bSummary || !verdict) return;
+      if (aPeak == null) {
+        aSummary.textContent = '실험을 실행해 주세요';
+        aDetail.textContent = '첫 번째 결과가 여기 기록됩니다.';
+        bSummary.textContent = '조건을 바꿔 보세요';
+        bDetail.textContent = '두 번째 결과가 여기 기록됩니다.';
+        verdict.textContent = '① 실험 A를 실행한 뒤, 속도·스프링·감쇠 중 하나를 바꿔 ② 실험 B를 실행하세요. 두 카드와 그래프의 차이를 함께 비교합니다.';
+        return;
+      }
+      aSummary.textContent = `최대 흔들림 ${pretty(aPeak)} m`;
+      aDetail.textContent = `충격 세기 ${pretty(aAcc)} m/s² · 안정화 ${pretty(aTime, 2)}초`;
+      if (bPeak == null) {
+        bSummary.textContent = 'B를 한 번 더 실행하세요';
+        bDetail.textContent = '조건을 바꾼 뒤 실행하면 비교가 완성됩니다.';
+        verdict.textContent = 'A가 기록됐습니다. 이제 조건 하나를 바꾸고 다시 실행해 보세요. 주황색 B 그래프가 생기면 차이를 바로 읽을 수 있습니다.';
+        return;
+      }
+      bSummary.textContent = `최대 흔들림 ${pretty(bPeak)} m`;
+      bDetail.textContent = `충격 세기 ${pretty(bAcc)} m/s² · 안정화 ${pretty(bTime, 2)}초`;
+      const peakDelta = (bPeak - aPeak) / Math.max(aPeak, .00001) * 100;
+      const timeDelta = bTime - aTime;
+      const motionWord = Math.abs(peakDelta) < 2 ? '거의 같습니다' : peakDelta < 0 ? `${Math.abs(peakDelta).toFixed(0)}% 더 작습니다` : `${Math.abs(peakDelta).toFixed(0)}% 더 큽니다`;
+      const settleWord = Math.abs(timeDelta) < .06 ? '안정되는 시간도 거의 같습니다.' : timeDelta < 0 ? `${Math.abs(timeDelta).toFixed(2)}초 더 빨리 안정됩니다.` : `${Math.abs(timeDelta).toFixed(2)}초 더 오래 흔들립니다.`;
+      verdict.textContent = `한눈에 보기: B의 차체 흔들림은 A보다 ${motionWord}. ${settleWord} 아래 그래프에서 청록색 A와 주황색 B의 높이와 길이를 확인해 보세요.`;
+    }
+    ['#a-z','#a-a','#a-t','#b-z','#b-a','#b-t'].forEach(selector => {
+      const cell = $(selector);
+      if (cell) new MutationObserver(refreshComparisonGuide).observe(cell, {childList:true, characterData:true, subtree:true});
+    });
+    refreshComparisonGuide();
+    $$('[data-view="results"]').forEach(button => button.addEventListener('click', () => setTimeout(() => {
+      refreshComparisonGuide();
+      const spotlight = $('#comparison-spotlight');
+      spotlight?.classList.remove('flash');
+      requestAnimationFrame(() => spotlight?.classList.add('flash'));
+    }, 20)));
+
+    /* Three questions: each must be answered correctly before the six-second celebration. */
+    const quiz = $('#quiz');
+    if (quiz) {
+      quiz.innerHTML = `
+        <div class="quiz-intro">세 문제를 모두 맞히면 실험실 수료 축하 효과가 나타납니다.</div>
+        <section class="quiz-question" data-question="1"><b>1. 스프링은 방지턱 충격을 받으면 무엇을 하나요?</b><button data-correct="false">충격을 완전히 없앤다.</button><button data-correct="true">눌리며 힘을 저장하고 다시 펴지려 한다.</button><button data-correct="false">바퀴의 회전을 멈춘다.</button></section>
+        <section class="quiz-question" data-question="2"><b>2. 댐퍼가 하는 가장 중요한 일은?</b><button data-correct="true">스프링이 오래 흔들리지 않도록 진동을 줄인다.</button><button data-correct="false">차체의 무게를 없앤다.</button><button data-correct="false">방지턱의 높이를 낮춘다.</button></section>
+        <section class="quiz-question" data-question="3"><b>3. 감쇠 계수를 높이면 보통 어떤 변화가 보이나요?</b><button data-correct="false">차체가 더 오래 크게 흔들린다.</button><button data-correct="true">반복 흔들림이 더 빨리 줄어든다.</button><button data-correct="false">타이어가 노면에서 사라진다.</button></section>
+        <div id="quiz-progress" class="quiz-progress">정답 0 / 3 · 각 문제의 답을 골라 보세요.</div>`;
+      const answered = new Set();
+      const fireworks = ['#f2c84b','#ec5c64','#15a8a8','#4578dc','#a55bd4','#ff8d4d'];
+      function celebrateSixSeconds() {
+        if ($('.celebration')) return;
+        const layer = document.createElement('div');
+        layer.className = 'celebration six-seconds';
+        layer.innerHTML = '<div class="celebration-message">축하합니다!!!!<small>3문제를 모두 맞혔어요 · 차량 서스펜션 개념 학습 완료 🎉</small></div>';
+        for (let i=0; i<64; i++) {
+          const bit = document.createElement('i'); bit.className = 'firework';
+          const angle = Math.random() * Math.PI * 2, distance = 100 + Math.random() * 520;
+          bit.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
+          bit.style.setProperty('--y', `${Math.sin(angle) * distance}px`);
+          bit.style.setProperty('--burst', fireworks[i % fireworks.length]);
+          bit.style.setProperty('--delay', `${Math.random() * 1.1}s`); layer.appendChild(bit);
+        }
+        document.body.appendChild(layer); setTimeout(() => layer.remove(), 6000);
+      }
+      quiz.addEventListener('click', event => {
+        const button = event.target.closest('button[data-correct]');
+        if (!button) return;
+        const question = button.closest('.quiz-question');
+        const key = question?.dataset.question;
+        if (!key || answered.has(key)) return;
+        if (button.dataset.correct === 'true') {
+          answered.add(key); button.classList.add('correct');
+          question.querySelectorAll('button').forEach(option => option.disabled = true);
+          const progress = $('#quiz-progress');
+          if (answered.size === 3) {
+            progress.textContent = '정답 3 / 3 · 모든 문제를 맞혔습니다!'; progress.classList.add('done');
+            setTimeout(celebrateSixSeconds, 250);
+          } else progress.textContent = `정답 ${answered.size} / 3 · 좋아요! 다음 문제도 풀어 보세요.`;
+        } else {
+          button.classList.add('wrong');
+          const progress = $('#quiz-progress');
+          progress.textContent = '다시 생각해 보세요. 틀린 답은 빨간색으로 표시했어요.';
+          setTimeout(() => { button.classList.remove('wrong'); if (answered.size < 3) progress.textContent = `정답 ${answered.size} / 3 · 각 문제의 답을 골라 보세요.`; }, 850);
+        }
+      });
+    }
+
+    /* Rotate both wheels from the speed setting and add a restrained, speed-dependent dust trail. */
+    const svg = $('#vehicle-art'), stage = $('.stage'), rear = $('#rear-assembly');
+    /* 화면 속 차량은 전시용입니다. 구조 관찰은 오른쪽 부품 버튼으로만 시작합니다. */
+    svg?.addEventListener('click', event => {
+      if (event.target instanceof Element && event.target.closest('[data-part]')) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    }, true);
+    const ns = 'http://www.w3.org/2000/svg';
+    if (rear && !$('#rear-wheel-rotor')) {
+      const rotor = document.createElementNS(ns, 'g'); rotor.id = 'rear-wheel-rotor';
+      const rim = rear.querySelector('.wheel-rim'), brake = rear.querySelector('.brake'), spokes = rear.querySelector('.spoke');
+      rear.insertBefore(rotor, rim);
+      [rim, brake, spokes].forEach(node => node && rotor.appendChild(node));
+    }
+    let dust = $('#speed-dust');
+    if (svg && !dust) {
+      dust = document.createElementNS(ns, 'g'); dust.id = 'speed-dust'; dust.setAttribute('class', 'speed-dust'); dust.setAttribute('opacity', '0');
+      for (let i=0; i<7; i++) { const puff = document.createElementNS(ns, 'circle'); puff.setAttribute('r', String(5 + i * 1.65)); dust.appendChild(puff); }
+      svg.insertBefore(dust, rear || svg.firstChild);
+    }
+    let driving = false, driveStart = 0, driveSpeed = 30, driveAnimationFrame = 0;
+    function stopDriving() {
+      driving = false; cancelAnimationFrame(driveAnimationFrame); stage?.classList.remove('driving');
+      dust?.setAttribute('opacity', '0');
+    }
+    function driveFrame(now) {
+      if (!driving) return;
+      const elapsed = (now - driveStart) / 1000;
+      if (elapsed > 6.25) { stopDriving(); return; }
+      const radians = elapsed * (driveSpeed / 3.6) / .47;
+      const degrees = radians * 180 / Math.PI;
+      $('#wheel-part')?.setAttribute('transform', `rotate(${degrees.toFixed(1)} 850 439)`);
+      $('#rear-wheel-rotor')?.setAttribute('transform', `rotate(${degrees.toFixed(1)} 297 439)`);
+      const strength = Math.max(0, Math.min(1, (driveSpeed - 12) / 38));
+      if (dust) {
+        dust.setAttribute('opacity', (0.08 + strength * .48).toFixed(2));
+        [...dust.children].forEach((puff, index) => {
+          const phase = (elapsed * (1.6 + strength * 2.5) + index * .31) % 1;
+          const x = 238 - phase * (48 + strength * 135) - index * 4;
+          const y = 481 - Math.sin(phase * Math.PI) * (8 + index * 3 + strength * 15);
+          puff.setAttribute('cx', x.toFixed(1)); puff.setAttribute('cy', y.toFixed(1));
+          puff.setAttribute('opacity', ((1 - phase) * (.18 + strength * .55)).toFixed(2));
+        });
+      }
+      driveAnimationFrame = requestAnimationFrame(driveFrame);
+    }
+    $('#run')?.addEventListener('click', () => {
+      stopDriving(); driveSpeed = Number($('#speed')?.value || 30); driveStart = performance.now(); driving = true;
+      stage?.classList.add('driving'); driveAnimationFrame = requestAnimationFrame(driveFrame);
+    });
+    $('.stop')?.addEventListener('click', stopDriving);
+    $$('[data-view]').forEach(button => button.addEventListener('click', () => { if (button.dataset.view !== 'experiment') stopDriving(); }));
+  })();
+  </script>
+</body>
+</html>
